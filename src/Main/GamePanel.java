@@ -4,8 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Graphics;
-
 import javax.swing.JPanel;
+import src.entity.Player;
 
 public class GamePanel extends JPanel implements Runnable {
     
@@ -27,6 +27,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
+    Player player = new Player(this, keyH);
 
     // Player default pos
     int playerX = 100;
