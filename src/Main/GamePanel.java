@@ -30,9 +30,9 @@ public class GamePanel extends JPanel implements Runnable {
     Player player = new Player(this, keyH);
 
     // Player default pos
-    int playerX = 100;
-    int playerY = 100;
-    int playerSpeed = 4;
+    int x = 100;
+    int y = 100;
+    int speed = 4;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -85,7 +85,7 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D) g;
-
+        player.draw(g2);
         g2.dispose();
     }
     
