@@ -53,5 +53,10 @@ public class UI {
         bgPanel[1].setBackground(Color.pink);
         bgPanel[1].setLayout(null);
         window.add(bgPanel[1]);
+
+        bgLabel[1] = new JLabel();
+        bgLabel[1].setBounds(0, 0, 700, 350);
+
+        
     }
 }
