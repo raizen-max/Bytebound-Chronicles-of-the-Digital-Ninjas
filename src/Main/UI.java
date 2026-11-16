@@ -8,6 +8,8 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import javax.swing.ImageIcon;
+import java.awt.Image;
 
 public class UI {
     
@@ -34,6 +36,9 @@ public class UI {
                 resizeComponents();
             }
         });
+
+        resizeComponents();
+        window.setVisible(true);
     }
 
     public void createMainField() {
@@ -50,7 +55,7 @@ public class UI {
 
         messageText = new JTextArea("Test Message");
         messageText.setBounds(50, 400, 700, 150);
-        messageText.setBackground(Color.blue);
+        messageText.setBackground(Color.black);
         messageText.setForeground(Color.white);
         messageText.setEditable(false);
         messageText.setLineWrap(true);
@@ -64,14 +69,26 @@ public class UI {
 
         bgPanel[1] = new JPanel();
         bgPanel[1].setBounds(50, 50, 700, 350); 
-        bgPanel[1].setBackground(Color.pink);
+        bgPanel[1].setBackground(Color.blue);
         bgPanel[1].setLayout(null);
+
+        bgPanel[1].add(bgLabel[1]);
         window.add(bgPanel[1]);
 
         bgLabel[1] = new JLabel();  
         bgLabel[1].setBounds(0, 0, 700, 350);
 
-        
+        ImageIcon bgIcon = new ImageIcon(
+            getClass().getClassLoader().getResource("office.png")
+            );
+
+        Image scaledImage = bgIcon.getImage().getScaledInstance(
+            bgPanel[1].getWidth(),
+            bgPanel[1].getHeight(),
+            Image.SCALE_SMOOTH
+            );
+
+        bgLabel[1].setIcon(new ImageIcon(scaledImage));
     }
 
     public void resizeComponents() {
