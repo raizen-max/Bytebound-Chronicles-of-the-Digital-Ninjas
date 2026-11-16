@@ -20,15 +20,17 @@ public class UI {
     public JPanel bgPanel[] = new JPanel[10];
     public JLabel bgLabel[] = new JLabel[10];
 
+    Image originalBg;
+
     public UI(GameManager gm) {
 
         this.gm = gm;
 
         createMainField();
 
-        window.setVisible(true);
-
         createBackground();
+
+        window.setVisible(true);
 
         window.addComponentListener(new ComponentAdapter() {
             @Override
@@ -38,6 +40,7 @@ public class UI {
         });
 
         resizeComponents();
+
         window.setVisible(true);
     }
 
@@ -71,34 +74,30 @@ public class UI {
         bgPanel[1].setBounds(50, 50, 700, 350); 
         bgPanel[1].setBackground(Color.blue);
         bgPanel[1].setLayout(null);
-
-        bgPanel[1].add(bgLabel[1]);
         window.add(bgPanel[1]);
 
         bgLabel[1] = new JLabel();  
         bgLabel[1].setBounds(0, 0, 700, 350);
 
-        ImageIcon bgIcon = new ImageIcon(
-            getClass().getClassLoader().getResource("office.png")
-            );
+        ImageIcon bgIcon = new ImageIcon("src\\res\\office.png");
+        originalBg = bgIcon.getImage();
 
-        Image scaledImage = bgIcon.getImage().getScaledInstance(
-            bgPanel[1].getWidth(),
-            bgPanel[1].getHeight(),
-            Image.SCALE_SMOOTH
-            );
-
-        bgLabel[1].setIcon(new ImageIcon(scaledImage));
+        bgPanel[1].add(bgLabel[1]);
     }
 
     public void resizeComponents() {
 
-        int width = window.getWidth();
-        int height = window.getHeight();
+        int width = window.getContentPane().getWidth();
+        int height = window.getContentPane().getHeight();
 
-        bgPanel[1].setBounds(0, 0, width, height);
+        int bgHeight = (int)(height * 0.7);
+        bgPanel[1].setBounds(0, 0, width, bgHeight);
 
-        bgLabel[1].setBounds(0, 0, width, height);
+        bgLabel[1].setBounds(0, 0, width, bgHeight);
+
+        bgLabel[1].setIcon(new ImageIcon(
+            originalBg.getScaledInstance(width, bgHeight, Image.SCALE_SMOOTH)
+        ));
 
         messageText.setBounds(
             (int)(width * 0.05),
