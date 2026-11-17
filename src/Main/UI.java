@@ -5,17 +5,45 @@ import java.awt.Color;
 import javax.swing.JTextArea;
 import java.awt.Font;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JLabel;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.swing.ImageIcon;
 import java.awt.Image;
 
 public class UI {
     
+    //palette
+    static final Color NAVY = new Color(0x0e1633), NAVY2 = new Color(0x1d2b64), RED = new Color(0xd62839);
+    static final Color WHITE = new Color(0xf4f4f8), YELLOW = new Color(0xffd479), PANEL = new Color(0x0a1128);
+
     GameManager gm;
     JFrame window;
-    
+
+    //scenes
+    /* JPanel[] scenePanel = new JPanel[13];
+    JLabel[] bgLabel = new JLabel[13];
+    ArrayList<Hotspot> hotspots = new ArrayList<Hotspot>();
+    ArrayList<Actor> actors = new ArrayList<Actor>();
+    int frame = 0;                       
+    HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>(); */
+
+    //HUD
+    JPanel hudPanel;
+    JProgressBar sanityBar, debtBar, heapBar;
+    JLabel[] hudLabel = new JLabel[3];
+    JLabel hudRight;
+
+    //message box
+    /* JPanel msgPanel;
+    JTextArea messageText;
+    JLabel nameLabel, portraitLabel, objectiveLabel, toastLabel, blackout;
+    double toastTime = 0; */
+
     public JTextArea messageText;
     public JPanel bgPanel[] = new JPanel[10];
     public JLabel bgLabel[] = new JLabel[10];
@@ -57,7 +85,7 @@ public class UI {
         window.setLayout(null);
 
         messageText = new JTextArea("Test Message");
-        messageText.setBounds(50, 400, 700, 150);
+        messageText.setBounds(10, 100, 300, 10);
         messageText.setBackground(Color.black);
         messageText.setForeground(Color.white);
         messageText.setEditable(false);
