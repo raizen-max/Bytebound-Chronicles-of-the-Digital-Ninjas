@@ -14,8 +14,8 @@ import java.awt.Image;
 public class UI {
     
     GameManager gm;
-
     JFrame window;
+    
     public JTextArea messageText;
     public JPanel bgPanel[] = new JPanel[10];
     public JLabel bgLabel[] = new JLabel[10];
