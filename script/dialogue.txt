@@ -1,0 +1,324 @@
+# ============================================================================
+#  BYTEBOUND - dialogue script (source: "Bytebound rescript no. 23")
+#  Format:  SPEAKER|expression|text      expression = neutral happy angry shock worry smug  (or - for narration)
+#  Commands: @FLAG x  @SANITY n  @DEBT n  @HEAP n  @HEAPSET n  @SHOW actor  @HIDE actor  @ALARM on/off
+#            @BLACKOUT on/off  @GOTO scene  @PUZZLE n  @CARD title|subtitle  @CREDITS  @DEPLOY  @ENDING
+#  Keep each text line under ~190 characters so it fits the dialogue box.
+# ============================================================================
+
+# ------------------------------------------------------------------ ACT I
+[s1_enter]
+NARRATOR|-|INT. TECH STARTUP OFFICE - OPEN FLOOR PLAN - FRIDAY, 4:55 PM. Low ambient hum of server fans. Soft lofi beats play from ALEX's headphones.
+NARRATOR|-|ALEX (31, Senior Java Architect) sits slumped in an ergonomic chair, staring at an IntelliJ IDEA window. Green checkmarks line the Maven build status. Almost time to go.
+NARRATOR|-|A green terminal notification pops up. GRANGER, a weathered Principal SysAdmin with a mug stained with four years of dark roast, rolls his chair over. (Click Granger!)
+
+[s1_granger]
+GRANGER|neutral|(Sipping coffee) Don't do it, Alex. Never click 'Merge to Master' after 4:30 PM on a Friday. The git gods demand sacrifices.
+ALEX|neutral|Granger, it's just a README update and a Javadoc typo fix. I'm locking my screen at 5:00 sharp. My weekend starts in five minutes.
+GRANGER|worry|That's what they all say. Last quarter, Dave merged a minor CSS patch at 4:58 and spent his entire Saturday defogging a production cluster in Cavite.
+GRANGER|neutral|Just run the local pre-flight checks and let the IDE hold your hand.
+NARRATOR|-|Granger taps the screen, pulling up the tutorial overlay.
+GRANGER|neutral|Verify your Maven dependencies, check your compiler compliance level, and confirm the JVM heap is clean.
+NARRATOR|-|TUTORIAL: Click the three glowing monitors to run the checks. Hover over things to see their names. Press H to hide or show the red markers.
+
+[s1_maven]
+NARRATOR|-|CHECK 1/3: Maven dependencies... all resolved. No version conflicts. [OK]
+
+[s1_compiler]
+NARRATOR|-|CHECK 2/3: Compiler compliance level... Java 17, matches the project settings. [OK]
+
+[s1_heap]
+NARRATOR|-|CHECK 3/3: JVM heap... 22% used. Clean. [OK]
+
+[s1_granger_good]
+GRANGER|happy|Good. Now clear those last three pull requests.
+NARRATOR|-|TUTORIAL: Click each monitor again to approve a pull request.
+
+[s1_pr1]
+NARRATOR|-|PR #1 - "Fix typo in README". Approved. A green checkmark lights up.
+
+[s1_pr2]
+NARRATOR|-|PR #2 - "Javadoc typo fix". Approved. Another green checkmark.
+
+[s1_pr3]
+NARRATOR|-|PR #3 - "Bump logging dependency". Approved. All three PRs are clear.
+
+[s1_granger_exit]
+ALEX|smug|See? Clean as a whistle. No unencapsulated fields, no wild inheritance trees. All pristine Java.
+GRANGER|neutral|(Standing up, patting Alex's shoulder) Knock on wood, kid. I'm heading out. If the servers start screaming, pretend you're deaf.
+@HIDE granger
+NARRATOR|-|Granger grabs his jacket and heads for the elevator.
+@GOTO 2
+
+[s2_enter]
+NARRATOR|-|The clock hits 4:58 PM. Alex lets out a long sigh of relief and hovers the mouse over the office door to leave. (Click the door!)
+
+[s2_door]
+NARRATOR|-|Suddenly, a bright pink Slack notification slams onto the center monitor.
+@SHOW lucy
+NARRATOR|-|LUCY (Junior Developer, fueled by iced coffee and raw optimism) wheels her chair over with a frantic grin, spinning her laptop around.
+LUCY|happy|Alex! Hey! Perfect timing, you're still here! Quick question before you head out. (Click Lucy.)
+
+[s2_lucy]
+NARRATOR|-|Alex freezes, staring at Lucy.
+ALEX|shock|Lucy. If that sentence starts with "quick question" and ends with anything related to production code, I am calling HR.
+LUCY|happy|I just refactored the entire checkout and payment module! Instead of managing twenty separate .java files across three packages, I merged everything into one single SuperManager.java class.
+LUCY|happy|And to make it super easy for the team, I made every field public static so any class can grab what it needs without all those annoying getters and setters!
+NARRATOR|-|Alex slowly turns around in their chair. The color drains from their face.
+ALEX|shock|You... you created a God Object. And you made every mutable field public static.
+LUCY|happy|Code reuse, maximum efficiency! No boilerplate! Watch, I already pushed it straight to the main branch so it's ready for Monday!
+@ALARM on
+@SANITY -5
+NARRATOR|-|BEEP. The IDE window turns blood red. The Maven compiler window erupts into a cascading waterfall of crimson.
+NARRATOR|-|[ERROR] COMPILATION ERROR: non-static variable this cannot be referenced from a static context. [ERROR] java.util.ConcurrentModificationException. [INFO] java.lang.OutOfMemoryError: Java heap space
+@HEAPSET 98
+NARRATOR|-|A high-pitched klaxon begins blaring from the JVM Profiler tab. Heap usage instantly shoots from 22% to 98% and keeps climbing.
+ALEX|shock|Lucy... you didn't just break encapsulation. You launched a tactical nuclear weapon into the JVM heap.
+LUCY|worry|(Blinking rapidly) ...Is that bad?
+@GOTO 3
+
+[s3_enter]
+NARRATOR|-|Before Alex can answer, heavy, rhythmic footsteps echo across the floor tiles.
+@SHOW guiliman
+NARRATOR|-|GUILIMAN (VP of Engineering, impeccably groomed, Patagonia vest, golf putter) strides past the cubicles and stops right behind Alex's desk.
+NARRATOR|-|He stares blankly at the wall-mounted telemetry dashboard, where the production uptime graph has just flatlined into a vertical red cliff.
+GUILIMAN|neutral|Team. Quick sync. The board of directors is pinging my Apple Watch. Why is the checkout service returning a 500 Internal Server Error and shouting about null references?
+GUILIMAN|smug|Is this a bold new decentralized micro-paradigm shift? (Click Guiliman to answer.)
+
+[s3_dash]
+NARRATOR|-|The wall dashboard: UPTIME 0%. The graph is a vertical red cliff. Checkout is returning 500 Internal Server Error to every customer.
+
+[s3_guiliman]
+NARRATOR|-|Alex looks from the dying JVM heap to Guiliman, then back to Lucy.
+ALEX|angry|Guiliman, Lucy bypassed every object-oriented principle known to computer science, flattened our entire architecture into a static God Object, and single-handedly tanked the staging cluster.
+NARRATOR|-|Guiliman gives a slow, approving nod, tapping his golf putter against the carpet.
+GUILIMAN|smug|Fascinating synergy. Let's reframe that narrative. Are we experiencing a catastrophic structural failure, or are we simply running an unscheduled stress test of our core resilience?
+LUCY|happy|(Whispering to Alex) See? He loves it!
+ALEX|angry|(Eyes twitching) Guiliman, please step away from the desk before I throw this keyboard out the window.
+ALEX|angry|Lucy, grab the IDE, put down your coffee, and prepare to spend your entire weekend learning what the SOLID principles actually mean.
+GUILIMAN|happy|That's the agile mindset I like to see! Circle back with a root-cause analysis by Monday morning. I'll be on the putting green.
+@HIDE guiliman
+@SANITY -4
+NARRATOR|-|Guiliman whistles a jaunty tune and strolls away, leaving Alex staring down the barrel of a fifteen-minute race against a heap overflow.
+@GOTO 4
+
+# ------------------------------------------------------------------ ACT II
+[s4_enter]
+@HEAPSET 84
+NARRATOR|-|INT. TECH STARTUP OFFICE - FRIDAY, 5:02 PM. The lofi beats are dead. The fluorescent lights hum menacingly as the red JVM Heap alarm pulses on Alex's right monitor (HEAP: 84%).
+NARRATOR|-|LUCY sits frozen next to Alex's desk, clutching her iced coffee like a shield. A harsh red webhook banner drops down from the top of the screen.
+@SHOW haversam
+NARRATOR|-|HAVERSAM (QA Lead, thick-rimmed glasses and a permanent scowl) appears in a Slack huddle popup, sharing a screen full of red X marks.
+HAVERSAM|angry|(Over voice call, deadpan) Alex. Explain to me why Jenkins just emailed me forty-seven JUnit failure reports in six seconds. Every assertion in CheckoutServiceTest is throwing an AssertionError.
+ALEX|angry|Haversam, hold off on the regression suite! Lucy merged an untested refactor straight to main.
+HAVERSAM|angry|I don't care who merged it, my automated smoke tests are currently asserting that expected: <true> but was: <null>. Even testUserCanLogOut() is returning a negative account balance.
+HAVERSAM|angry|Fix the build before the nightly audit runs at 5:30, or I'm locking the staging servers.
+@HIDE haversam
+@SANITY -3
+@FLAG haversam_done
+NARRATOR|-|Haversam disconnects with a sharp click.
+
+[s4_lucy]
+LUCY|worry|Okay, minor test flakiness! Nothing a quick extends override won't fix, right?
+NARRATOR|-|Alex stares at her, then reaches for the class hierarchy diagram on the left monitor.
+
+[s4_diagram]
+NARRATOR|-|Alex opens the class hierarchy diagram.
+ALEX|shock|Lucy... what is this? Why does CreditCardPayment extend DatabaseConnection?!
+LUCY|worry|Because both classes needed a .save() method! Inheritance is for code reuse!
+ALEX|angry|A credit card is-not-a database socket! You violated the Liskov Substitution Principle and tightly coupled the payment tier to the JDBC driver!
+@GOTO 5
+
+[s5_enter]
+NARRATOR|-|Scene 5: Circular Dependency Meltdown. The IDE opens CreditCardPayment.java and CryptoWallet.java.
+NARRATOR|-|PUZZLE 1: Replace extends DatabaseConnection with implements Payable, then inject the database via the constructor. You have 60 seconds before the Heap hits 95%!
+@PUZZLE 1
+
+[s5_after_p1]
+NARRATOR|-|As Alex rapidly refactors the class signatures, a frantic yellow warning flashes in the DevOps terminal.
+@SHOW luke
+LUKE|shock|Alex! Bro! The CI/CD pipeline is completely choked! Maven is stuck in an infinite compilation loop!
+ALEX|neutral|(Typing furiously) I'm decoupling the payment classes right now, Luke! Give me thirty seconds!
+LUKE|shock|You don't have thirty seconds! OrderProcessor imports SuperManager, SuperManager instantiates PaymentFactory, and PaymentFactory extends OrderProcessor! Maven is throwing a BeanCurrentlyInCreationException!
+LUKE|worry|The Docker containers are spinning up and crashing so fast the cooling fans in Rack 4 sound like a Boeing 747!
+ALEX|angry|(Groaning) Circular dependencies! Lucy, why did PaymentFactory inherit from OrderProcessor?!
+LUCY|worry|I needed access to the taxRate variable! It was faster than passing it as a parameter!
+ALEX|angry|(Pointing at the screen) Luke, pause the auto-scaling group on AWS so it stops spawning dead containers! Lucy, extract taxRate into a final utility constant class, right now!
+@SANITY -3
+@FLAG luke_talked
+
+[s5_aws]
+NARRATOR|-|Alex opens the AWS console and pauses the auto-scaling group.
+LUKE|happy|(Saluting with an energy drink) Killing the auto-scaler! Don't let that heap overflow, man!
+@HIDE luke
+NARRATOR|-|Luke sprints back toward the server room.
+
+[s5_lucy]
+LUCY|worry|Okay okay, extracting taxRate! What do I write?
+@PUZZLE 4
+
+[s5_tax_done]
+NARRATOR|-|TaxConstants.java is created. PaymentFactory no longer needs to extend OrderProcessor. The dependency cycle is broken.
+
+[s5_done]
+NARRATOR|-|Alex re-runs the Maven build. The infinite loop stops. The Docker containers stop crashing. For the moment, the pipeline holds.
+@GOTO 6
+
+[s6_enter]
+NARRATOR|-|Scene 6: The Unencapsulated Leak. The IDE switches to UserAccount.java, where public double balance; is exposed. A red ticker shows external threads mutating account.balance = -9999.99;
+NARRATOR|-|PUZZLE 2: Make balance private, generate a getter, and add a negative-value check inside setBalance().
+@PUZZLE 2
+
+[s6_after_p2]
+@FLAG phone_ringing
+NARRATOR|-|Just as Alex locks down the balance field, the desk phone rings loudly. (Click the desk phone!)
+
+[s6_kilver]
+NARRATOR|-|Alex hits speakerphone without looking up from the keyboard.
+@SHOW kilver
+KILVER|worry|(Over speakerphone) Alex. Tell me you're at your desk.
+ALEX|worry|I'm here, Kilver! Tell me the production PostgreSQL database is still intact!
+KILVER|angry|The primary cluster is alive, barely, but your Java backend is hammering it with ten thousand raw ClassCastException queries a second! Someone exposed raw Object references!
+ALEX|neutral|We're patching the encapsulation breach right now!
+KILVER|angry|Hurry up! Every time a user clicks 'View Profile,' the ORM tries to cast a ShoppingCart object into a UserSession and dumps a raw SQL stack trace onto the customer's browser!
+KILVER|angry|And worse: something in your code is instantiating a new DatabaseConnection inside a for loop without closing it! My connection pool is completely maxed out!
+LUCY|worry|(Covering her mouth) Oh... I forgot to put the Scanner and connection streams inside a try-with-resources block.
+ALEX|worry|(Closing eyes, taking a deep breath) Kilver, flush the idle connection pool and give me two minutes. We're enforcing a private constructor on the connection manager to turn it into a proper Singleton.
+KILVER|angry|Two minutes, Alex. After that, I'm pulling the ethernet cable out of the wall myself.
+@HIDE kilver
+@SANITY -4
+@FLAG kilver_done
+NARRATOR|-|The speakerphone clicks dead.
+
+[s6_lucy]
+ALEX|angry|Lucy. Streams. Resources. Closed. Now.
+@SANITY -2
+@PUZZLE 5
+
+[s6_try_done]
+NARRATOR|-|ReportJob.java now closes every Scanner and connection automatically. The connection pool starts to drain.
+
+[s6_conn]
+NARRATOR|-|Alex opens ConnectionManager.java. Anyone can call new ConnectionManager(). That has to stop.
+@PUZZLE 6
+
+[s6_conn_done]
+NARRATOR|-|ConnectionManager is now a proper Singleton. No more connections spawned inside for loops.
+
+[s6_delumar]
+NARRATOR|-|On the right monitor, DELUMAR (Senior Security Auditor) slides a cryptic message into Alex's Slack DMs.
+@SHOW delumar
+DELUMAR|neutral|The founders wrote an abstract Transaction interface in 2018 for a reason, Alex. Never let raw concrete classes touch the checkout queue.
+DELUMAR|smug|Check the if-else chain in SuperManager before it hits the stack limit.
+@HIDE delumar
+@FLAG delumar_done
+NARRATOR|-|Alex stares at the message, then prepares to scroll down to line 400 of SuperManager.java.
+
+[s6_line400]
+NARRATOR|-|Line 400 of SuperManager.java: a terrifying 300-line nested if-else block that is about to trigger a StackOverflowError.
+@GOTO 7
+
+# ------------------------------------------------------------------ ACT III
+[s7_enter]
+@HEAPSET 94
+NARRATOR|-|INT. TECH STARTUP OFFICE - FRIDAY, 5:11 PM. The overhead lights flicker as the server room fans roar through the drywall like a wind tunnel.
+NARRATOR|-|On Alex's right monitor, the JVM Profiler flashes violent crimson: HEAP MEMORY: 94% - GC OVERHEAD LIMIT EXCEEDED.
+@SHOW farseer
+NARRATOR|-|FARSEER (Senior Performance Architect, blue-light glasses, three telemetry tablets) slides across the polished floor in his rolling chair, slamming his palms onto Alex's desk.
+FARSEER|shock|Alex! The JVM Garbage Collector is thrashing! You've got unreferenced SuperManager instances clogging the Eden space faster than the G1 collector can sweep them! Thirty seconds from OutOfMemoryError!
+ALEX|worry|(Slamming the manual GC trigger button on the Profiler) I'm holding the heap at ninety-two percent! Tell me what's eating the memory!
+@HEAPSET 92
+FARSEER|angry|It's the checkout router! Every single request is spawning an anonymous inner class inside a nested if-else chain! The call stack is growing exponentially!
+@SANITY -3
+NARRATOR|-|Before Farseer can finish, VENUS (Frontend Lead, neon hoodie, a tablet showing a completely broken web store) storms over from the UI bullpen.
+@SHOW venus
+VENUS|angry|Alex! What did you guys do to the REST endpoints?! My React client is crashing every two seconds with TypeError: Cannot read properties of null!
+ALEX|worry|Venus, we're refactoring the backend models right now-
+@FLAG farseer_done
+NARRATOR|-|TIP: Click the JVM Profiler (right monitor) or press G to run a manual GC. It has a cooldown. Click Venus to keep talking.
+
+[s7_venus]
+VENUS|angry|Your JSON serializer is spitting out empty brackets {} for every user profile! Because somebody deleted all the public getters, Jackson can't serialize a single field!
+VENUS|angry|My entire storefront is blank, and the checkout button literally redirects to localhost:8080/null!
+LUCY|worry|(Shrinking into her chair) I thought encapsulation meant hiding everything...
+ALEX|angry|(Pointing at the screen) Encapsulation means private fields with controlled public getters, Lucy! Venus, give me ninety seconds to restore the DTO getters and abstract the payment pipeline!
+VENUS|angry|Ninety seconds, Alex! After that, marketing's Friday flash sale goes live and three thousand users hit a blank page!
+@HIDE venus
+@SANITY -3
+@FLAG venus_done
+NARRATOR|-|Venus marches back toward her desk, furiously typing on her tablet.
+
+[s7_dto]
+NARRATOR|-|Alex opens UserDTO.java. Every public getter has been deleted.
+@PUZZLE 7
+
+[s7_dto_done]
+NARRATOR|-|The DTO getters are restored. Jackson can serialize the profile fields again. Now for the payment pipeline.
+
+[s7_end]
+NARRATOR|-|Alex opens Transaction.java alongside CardTransaction, CashTransaction and RefundTransaction. Time to abstract the payment pipeline.
+@GOTO 8
+
+[s8_enter]
+NARRATOR|-|Scene 8: Runtime Polymorphism Climax. The IDE opens Transaction.java alongside CardTransaction.java, CashTransaction.java, and RefundTransaction.java.
+NARRATOR|-|PUZZLE 3: Abstract the class, declare process(), add @Override, and replace the 300-line if-else. The heap grows while you work: click RUN GC (or press G) to keep it under 98%!
+@PUZZLE 3
+
+[s8_after_p3]
+NARRATOR|-|Alex rapidly applies the final change, fingers flying across the mechanical keyboard.
+ALEX|worry|(Sweating) Abstracting the base Transaction class... overriding process() in the subclasses... replacing instanceof checks with dynamic method dispatch!
+LUCY|happy|(Watching the compiler progress bar) It's compiling! Eighty percent... ninety percent...
+@SHOW guiliman
+NARRATOR|-|GUILIMAN jogs around the corner, breathless, swinging his golf putter like a relay baton.
+GUILIMAN|happy|Team! Status report! The flash sale countdown just hit zero! Are we ready to scale our synergistic consumer touchpoints?!
+ALEX|neutral|(Hitting Ctrl + Shift + F10 to run the final Maven build) Everyone hold your breath!
+@SANITY -2
+NARRATOR|-|SILENCE. For three agonizing seconds, the IDE freezes. The server fans whine at peak pitch. A single modal dialog pops up in the center of the screen.
+@DEPLOY
+
+[s8_deploy_no]
+NARRATOR|-|Alex hesitates. The clock keeps ticking. The flash sale is live. There is only one choice.
+@SANITY -2
+@DEPLOY
+
+[s8_deploy_yes]
+NARRATOR|-|The player hits Y. DING. The Maven terminal erupts in bright emerald green.
+NARRATOR|-|[INFO] Tests run: 47, Failures: 0, Errors: 0, Skipped: 0.   [INFO] BUILD SUCCESS
+@GOTO 9
+
+[s9_enter]
+@ALARM off
+@HEAPSET 19
+NARRATOR|-|The server room fans power down. The harsh red alarms vanish, replaced by a calm, steady green heartbeat across all monitors (JVM HEAP: 19%).
+NARRATOR|-|Farseer exhales a long breath, slumping back in his chair. Across the room, Venus gives a sharp thumbs-up as live order metrics begin ticking upward on the wall TV.
+GUILIMAN|happy|Incredible agility, team. Truly modular, enterprise-grade Java synergy. That's why we pay you the big bucks! Have a phenomenal weekend!
+@HIDE guiliman
+NARRATOR|-|Guiliman strolls off toward the elevators, whistling.
+@ENDING
+
+# ------------------------------------------------------------------ ENDINGS
+[end_a]
+NARRATOR|-|ENDING A: CLEAN ARCHITECTURE. The codebase passes SonarQube with zero code smells and 100% SOLID compliance.
+ALEX|happy|(Locking the main branch permissions) It's done. Zero data loss, clean inheritance, proper encapsulation.
+LUCY|happy|So... on Monday, should we look into Multiple Inheritance in C++?
+ALEX|angry|(Handing her a thick copy of Joshua Bloch's 'Effective Java') Read Chapter 4 over the weekend, Lucy. And go home.
+@CARD RANK S|PRINCIPAL ARCHITECT
+@CREDITS
+
+[end_b]
+NARRATOR|-|ENDING B: THE SPAGHETTI PATCH. The site is live, though Alex had to slap @SuppressWarnings("unchecked"), raw Object casts, and three Thread.sleep(500) hacks into the controller just to beat the clock.
+VENUS|angry|(Shouting from across the room) Hey, why are all the user profile pictures temporarily rendering as the default Java coffee cup icon?!
+ALEX|smug|(Grabbing backpack and coat) That is a feature, Venus. And a problem for Monday.
+@CARD RANK B|SURVIVOR OF PROD
+@CREDITS
+
+[end_c]
+@ALARM off
+@BLACKOUT on
+NARRATOR|-|A massive java.lang.StackOverflowError crashes the entire AWS region. Every screen goes pitch black.
+NARRATOR|-|CUT TO: SIX MONTHS LATER.
+@BLACKOUT off
+NARRATOR|-|Alex, Granger, and Lucy are sitting on wooden stools inside a remote mountain cabin in Batangas with zero Wi-Fi, teaching basic procedural loops on a chalkboard to local goats.
+GRANGER|happy|See? No objects. No pointers. Just pure, peaceful silence.
+@CARD GAME OVER|EXCEPTION IN THREAD "MAIN"
+@CREDITS
