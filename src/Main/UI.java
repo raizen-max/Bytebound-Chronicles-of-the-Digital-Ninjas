@@ -25,12 +25,12 @@ public class UI {
     JFrame window;
 
     //scenes
-    /* JPanel[] scenePanel = new JPanel[13];
+    JPanel[] scenePanel = new JPanel[13];
     JLabel[] bgLabel = new JLabel[13];
     ArrayList<Hotspot> hotspots = new ArrayList<Hotspot>();
     ArrayList<Actor> actors = new ArrayList<Actor>();
     int frame = 0;                       
-    HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>(); */
+    HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>(); 
 
     //HUD
     JPanel hudPanel;
@@ -39,10 +39,17 @@ public class UI {
     JLabel hudRight;
 
     //message box
-    /* JPanel msgPanel;
+    JPanel msgPanel;
     JTextArea messageText;
     JLabel nameLabel, portraitLabel, objectiveLabel, toastLabel, blackout;
-    double toastTime = 0; */
+    double toastTime = 0; 
+
+    //popup
+    JPanel popupPanel;
+    JLabel popupTitle;
+    String popupName = "";
+
+
 
     public JTextArea messageText;
     public JPanel bgPanel[] = new JPanel[10];
