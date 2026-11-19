@@ -49,7 +49,10 @@ public class UI {
     JLabel popupTitle;
     String popupName = "";
 
-
+    //talking animation
+    HashMap<String, ArrayList<ImageIcon>> talkFrames = new HashMap<String, ArrayList<ImageIcon>>();
+    String talkSpeaker = "", talkExpr = "";
+    int talkTicks = 0, talkIndex = 0;
 
     public JTextArea messageText;
     public JPanel bgPanel[] = new JPanel[10];
