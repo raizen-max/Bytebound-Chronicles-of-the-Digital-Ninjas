@@ -54,13 +54,17 @@ public class UI {
 
     //message box
     JPanel msgPanel;
-    //JTextArea messageText;
+    JTextArea messageText;
     JLabel nameLabel, portraitLabel, objectiveLabel, toastLabel, blackout;
-    double toastTime = 0; 
+    double toastTime = 0;
+    String fullText = "";
+    int typePos = 0;
+    String portraitWho = "", portraitExpr = "";
+    ArrayList<String> log = new ArrayList<String>(); 
 
     //popup
     JPanel popupPanel;
-    JLabel popupTitle;
+    JLabel popupTitle, popupPortrait, popupRole;
     String popupName = "";
 
     //talking animation
@@ -68,18 +72,17 @@ public class UI {
     String talkSpeaker = "", talkExpr = "";
     int talkTicks = 0, talkIndex = 0;
 
-    public JTextArea messageText;
-    public JPanel bgPanel[] = new JPanel[10];
-    public JLabel bgLabel[] = new JLabel[10];
-
-    Image originalBg;
+    //panel for puzzles
+    JPanel puzzlePanel;
+    JLabel puzTitle, puzInstr, puzTimer, puzStep;
+    JTextArea puzCode, puzFeedback;
+    JProgressBar puzTimerBar;
+    JButton[] puzOption = new JButton[4];
+    JButton puzHint, puzGc;
 
     public UI(GameManager gm) {
-
         this.gm = gm;
-
         createMainField();
-
         createBackground();
 
         window.setVisible(true);
@@ -131,7 +134,7 @@ public class UI {
         bgLabel[1] = new JLabel();  
         bgLabel[1].setBounds(0, 0, 700, 350);
 
-        ImageIcon bgIcon = new ImageIcon("src\\res\\officee.png");
+        ImageIcon bgIcon = new ImageIcon("assets\\backgrounds\\officee.png");
         originalBg = bgIcon.getImage();
 
         bgPanel[1].add(bgLabel[1]);
@@ -158,4 +161,12 @@ public class UI {
             (int)(height * 0.25)
         );
     }
+
+    //===================================================
+    // ----------- Improved code starts here ------------
+    //===================================================
+
+
+
+
 }
