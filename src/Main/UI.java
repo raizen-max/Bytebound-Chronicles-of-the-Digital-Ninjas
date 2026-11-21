@@ -1,32 +1,38 @@
 package src.Main;
 
-import javax.swing.JFrame;
-import java.awt.Color;
-import javax.swing.JTextArea;
-import java.awt.Font;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JLabel;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.swing.ImageIcon;
-import java.awt.Image;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
 
 public class UI {
     
     //palette
     static final Color NAVY = new Color(0x0e1633), NAVY2 = new Color(0x1d2b64), RED = new Color(0xd62839);
     static final Color WHITE = new Color(0xf4f4f8), YELLOW = new Color(0xffd479), PANEL = new Color(0x0a1128);
+    static final int W = 960, H = 540;
+    static int charsPerTick = 2;
 
     GameManager gm;
     JFrame window;
 
+    //scaling
+    double k = 1;
+    int offset_x = 0, offset_y = 0;
+    class Placed { JComponent c; int x, y, w, h, font; boolean top; }
+    ArrayList<Placed> placed = new ArrayList<Placed>();
+    HashMap<JComponent, Placed> placedOf = new HashMap<JComponent, Placed>();
+    HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
+    Timer iconTimer;
+
     //scenes
     JPanel[] scenePanel = new JPanel[13];
-    JLabel[] bgLabel = new JLabel[13];
+    //JLabel[] bgLabel = new JLabel[13];
     ArrayList<Hotspot> hotspots = new ArrayList<Hotspot>();
     ArrayList<Actor> actors = new ArrayList<Actor>();
     int frame = 0;                       
@@ -40,7 +46,7 @@ public class UI {
 
     //message box
     JPanel msgPanel;
-    JTextArea messageText;
+    //JTextArea messageText;
     JLabel nameLabel, portraitLabel, objectiveLabel, toastLabel, blackout;
     double toastTime = 0; 
 
@@ -117,7 +123,7 @@ public class UI {
         bgLabel[1] = new JLabel();  
         bgLabel[1].setBounds(0, 0, 700, 350);
 
-        ImageIcon bgIcon = new ImageIcon("src\\res\\office.png");
+        ImageIcon bgIcon = new ImageIcon("src\\res\\officee.png");
         originalBg = bgIcon.getImage();
 
         bgPanel[1].add(bgLabel[1]);
