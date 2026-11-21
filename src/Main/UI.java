@@ -32,17 +32,25 @@ public class UI {
 
     //scenes
     JPanel[] scenePanel = new JPanel[13];
-    //JLabel[] bgLabel = new JLabel[13];
+    JLabel[] bgLabel = new JLabel[13];
     ArrayList<Hotspot> hotspots = new ArrayList<Hotspot>();
     ArrayList<Actor> actors = new ArrayList<Actor>();
-    int frame = 0;                       
-    HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>(); 
+    int frame = 0;
+    
+    /* hotspot marker (no file yet)
+    HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
+    */
+
+    //title
+    JButton[] titleButton = new JButton[5];
+    JLabel[] titlePortrait = new JLabel[3];
 
     //HUD
     JPanel hudPanel;
     JProgressBar sanityBar, debtBar, heapBar;
     JLabel[] hudLabel = new JLabel[3];
     JLabel hudRight;
+    JButton menuBtn;
 
     //message box
     JPanel msgPanel;
