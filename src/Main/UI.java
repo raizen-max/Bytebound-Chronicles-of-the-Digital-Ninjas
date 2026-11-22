@@ -11,14 +11,15 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 
 public class UI {
-    
+    /* 
     //palette
     static final Color NAVY = new Color(0x0e1633), NAVY2 = new Color(0x1d2b64), RED = new Color(0xd62839);
     static final Color WHITE = new Color(0xf4f4f8), YELLOW = new Color(0xffd479), PANEL = new Color(0x0a1128);
     static final int W = 960, H = 540;
     static int charsPerTick = 2;
+    */
 
-    GameManager gm;
+    /* GameManager gm;
     JFrame window;
 
     //scaling
@@ -41,6 +42,7 @@ public class UI {
     HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
     */
 
+    /* 
     //title
     JButton[] titleButton = new JButton[5];
     JLabel[] titlePortrait = new JLabel[3];
@@ -161,10 +163,17 @@ public class UI {
             (int)(height * 0.25)
         );
     }
+*/
+    //===================================================
+    // ------------------- Scaling  ---------------------
+    //===================================================
+    static Font font(int size) { return new Font(Font.MONOSPACED, Font.BOLD, size); }
 
-    //===================================================
-    // ----------- Improved code starts here ------------
-    //===================================================
+
+
+    
+
+
 
 
 
