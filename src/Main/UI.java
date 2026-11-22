@@ -279,15 +279,44 @@ public class UI {
         put(content, msgPanel, 20, 392, 920, 128);
         put(msgPanel, messageText, 24, 14, 870, 100);
 
-        MouseAdapter advance = new MouseAdapter() {
+        /* MouseAdapter advance = new MouseAdapter() {
             public void mousePressed(MouseEvent e) { gm.ev.next(); }
-        };
+        }; 
         msgPanel.addMouseListener(advance);
         messageText.addMouseListener(advance);
         portraitLabel.addMouseListener(advance);
-        nameLabel.addMouseListener(advance);
+        nameLabel.addMouseListener(advance); */
     }
 
+    void createHud() {
+        hudPanel = new JPanel(null);
+        hudPanel.setBackground(NAVY);
+        hudPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, RED));
+        put(content, hudPanel, 0, 0, 960, 37);
+
+        String[] names = {"SANITY", "TECH DEBT", "JVM HEAP"};
+        int[] xs = {10, 246, 482};
+        JProgressBar[] bars = new JProgressBar[3];
+        for (int i = 0; i < 3; i++) {
+            hudLabel[i] = label(names[i], 12, WHITE);
+            put(hudPanel, hudLabel[i], xs[i], 8, 90, 18);
+            bars[i] = new JProgressBar(0, 100);
+            bars[i].setStringPainted(true);
+            bars[i].setBackground(NAVY2);
+            put(hudPanel, bars[i], xs[i] + 84, 9, 110, 16);
+        }
+        sanityBar = bars[0]; debtBar = bars[1]; heapBar = bars[2];
+
+        hudRight = label("", 12, WHITE);
+        hudRight.setHorizontalAlignment(SwingConstants.RIGHT);
+        put(hudPanel, hudRight, 684, 8, 190, 18);
+
+        menuBtn = button("MENU", 13, NAVY2);
+        /* menuBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) { menu.open("pause", ""); }
+        }); */
+        put(hudPanel, menuBtn, 880, 5, 72, 26);
+    }
         
 
 
