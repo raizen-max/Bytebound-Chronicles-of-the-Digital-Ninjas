@@ -11,16 +11,16 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 
 public class UI {
-    /* 
+     
     //palette
     static final Color NAVY = new Color(0x0e1633), NAVY2 = new Color(0x1d2b64), RED = new Color(0xd62839);
     static final Color WHITE = new Color(0xf4f4f8), YELLOW = new Color(0xffd479), PANEL = new Color(0x0a1128);
     static final int W = 960, H = 540;
     static int charsPerTick = 2;
-    */
 
-    /* GameManager gm;
+    GameManager gm;
     JFrame window;
+    Container content;
 
     //scaling
     double k = 1;
@@ -38,11 +38,11 @@ public class UI {
     ArrayList<Actor> actors = new ArrayList<Actor>();
     int frame = 0;
     
-    /* hotspot marker (no file yet)
-    HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
-    */
-
     /* 
+    hotspot marker (no file yet)
+    HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>(); */
+
+     
     //title
     JButton[] titleButton = new JButton[5];
     JLabel[] titlePortrait = new JLabel[3];
@@ -85,7 +85,6 @@ public class UI {
     public UI(GameManager gm) {
         this.gm = gm;
         createMainField();
-        createBackground();
 
         window.setVisible(true);
 
@@ -125,49 +124,110 @@ public class UI {
         window.add(messageText);
     } 
 
-    public void createBackground() {
 
-        bgPanel[1] = new JPanel();
-        bgPanel[1].setBounds(50, 50, 700, 350); 
-        bgPanel[1].setBackground(Color.blue);
-        bgPanel[1].setLayout(null);
-        window.add(bgPanel[1]);
-
-        bgLabel[1] = new JLabel();  
-        bgLabel[1].setBounds(0, 0, 700, 350);
-
-        ImageIcon bgIcon = new ImageIcon("assets\\backgrounds\\officee.png");
-        originalBg = bgIcon.getImage();
-
-        bgPanel[1].add(bgLabel[1]);
-    }
-
-    public void resizeComponents() {
-
-        int width = window.getContentPane().getWidth();
-        int height = window.getContentPane().getHeight();
-
-        int bgHeight = (int)(height * 0.7);
-        bgPanel[1].setBounds(0, 0, width, bgHeight);
-
-        bgLabel[1].setBounds(0, 0, width, bgHeight);
-
-        bgLabel[1].setIcon(new ImageIcon(
-            originalBg.getScaledInstance(width, bgHeight, Image.SCALE_SMOOTH)
-        ));
-
-        messageText.setBounds(
-            (int)(width * 0.05),
-            (int)(height * 0.7),
-            (int)(width * 0.9),
-            (int)(height * 0.25)
-        );
-    }
-*/
     //===================================================
     // ------------------- Scaling  ---------------------
     //===================================================
     static Font font(int size) { return new Font(Font.MONOSPACED, Font.BOLD, size); }
+
+    /** Adds a component using LOGICAL (960x540) coordinates and remembers them so it can be re-scaled. 
+    void put(Container parent, JComponent c, int x, int y, int w, int h) {
+        parent.add(c);
+        Placed p = new Placed();
+        p.c = c; p.x = x; p.y = y; p.w = w; p.h = h;
+        p.top = (parent == content);
+        p.font = (c instanceof JPanel || c instanceof MenuButton || c instanceof Pointer || c instanceof Divider) ? 0 : c.getFont().getSize();
+        placed.add(p);
+        placedOf.put(c, p);
+        apply(p);
+    } */
+
+    void apply(Placed p) {
+        int x = (int) Math.round(p.x * k) + (p.top ? offset_x : 0);
+        int y = (int) Math.round(p.y * k) + (p.top ? offset_y : 0);
+        p.c.setBounds(x, y, (int) Math.round(p.w * k), (int) Math.round(p.h * k));
+        if (p.font > 0) p.c.setFont(font(Math.max(8, (int) Math.round(p.font * k))));
+    }
+
+    /** Change where a component is (logical coordinates). */
+    void move(JComponent c, int x, int y, int w, int h) {
+        Placed p = placedOf.get(c);
+        p.x = x; p.y = y; p.w = w; p.h = h;
+        apply(p);
+    }
+
+    void setFontSize(JComponent c, int size) {
+        Placed p = placedOf.get(c);
+        p.font = size;
+        apply(p);
+    }
+
+    public void resizeComponents() {
+        int w = content.getWidth(), h = content.getHeight();
+        if (w <= 0 || h <= 0) return;
+        double nk = Math.min(w / (double) W, h / (double) H);
+        if (Math.abs(nk - k) > 0.0001) iconCache.clear();
+        k = nk;
+        offset_x = (int) ((w - W * k) / 2);
+        offset_y = (int) ((h - H * k) / 2);
+        for (int i = 0; i < placed.size(); i++) apply(placed.get(i));
+        content.repaint();
+    }
+
+    // Finds an image inside assets/<category>/ 
+    String findImage(String category, String name) {
+        String path = "assets/" + category + "/" + name + ".png";
+    return new File(path).exists() ? path : null;
+    }
+
+    //Image scaling and caching
+    ImageIcon icon(String category, String name, int w, int h) {
+        int pw = Math.max(1, (int) Math.round(w * k)), ph = Math.max(1, (int) Math.round(h * k));
+        String key = category + "/" + name + "@" + pw + "x" + ph;
+        if (iconCache.containsKey(key)) return iconCache.get(key);
+        ImageIcon icon = null;
+        String path = findImage(category, name);
+        if (path != null) {
+            try {
+                BufferedImage src = ImageIO.read(new File(path));
+                BufferedImage big = new BufferedImage(pw, ph, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = big.createGraphics();
+                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+                g.drawImage(src, 0, 0, pw, ph, null);
+                g.dispose();
+                icon = new ImageIcon(big);
+            } catch (Exception e) {
+                System.out.println("Could not load " + path);
+            }
+        } else {
+            System.out.println("Missing image: " + category + "/" + name);
+        }
+        iconCache.put(key, icon);
+        return icon;
+    }
+    
+    // ADD refreshIcons method
+
+    JLabel label(String text, int size, Color color) {
+        JLabel l = new JLabel(text);
+        l.setFont(font(size));
+        l.setForeground(color);
+        return l;
+    }
+
+    JButton button(String text, int size, Color bg) {
+        JButton b = new JButton(text);
+        b.setFont(font(size));
+        b.setBackground(bg);
+        b.setForeground(WHITE);
+        b.setFocusPainted(false);
+        b.setFocusable(false);          // so the Space key won't press a button or smthn
+        b.setOpaque(true);
+        b.setBorder(new LineBorder(WHITE, 2));
+        return b;
+    }
+
+    
 
 
 
