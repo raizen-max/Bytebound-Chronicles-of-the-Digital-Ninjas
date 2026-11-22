@@ -317,6 +317,44 @@ public class UI {
         }); */
         put(hudPanel, menuBtn, 880, 5, 72, 26);
     }
+
+    void createPopup() {
+        popupPanel = new JPanel(null);
+        popupPanel.setBackground(PANEL);
+        popupPanel.setBorder(new LineBorder(RED, 3));
+        popupTitle = label("", 13, WHITE);
+        popupTitle.setOpaque(true);
+        popupTitle.setBackground(RED);
+        popupTitle.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
+        popupPortrait = new JLabel();
+        popupRole = label("", 12, new Color(0xc9d1f0));
+        popupPanel.setVisible(false);
+        put(content, popupPanel, 668, 44, 270, 176);
+        put(popupPanel, popupTitle, 0, 0, 270, 22);
+        put(popupPanel, popupPortrait, 10, 34, 128, 128);
+        put(popupPanel, popupRole, 146, 60, 120, 60);
+    }
+
+    void createBlackout() {
+        blackout = new JLabel();
+        blackout.setOpaque(true);
+        blackout.setBackground(Color.black);
+        blackout.setVisible(false);
+        put(content, blackout, 0, 0, 960, 540);
+    }
+
+    // void createScenes() {
+    // }
+
+    // void createTitle() {
+    // }
+
+    // ---- small custom-painted pieces of the title screen (all draw in logical coordinates and scale with the window)
+    static void pixelRect(Graphics2D g, int x, int y, int w, int h) {      // rectangle with notched (pixel) corners
+        g.fillRect(x + 2, y, w - 4, h);
+        g.fillRect(x, y + 2, w, h - 4);
+        g.fillRect(x + 1, y + 1, w - 2, h - 2);
+    }
         
 
 
