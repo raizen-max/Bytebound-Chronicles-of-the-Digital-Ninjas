@@ -239,6 +239,57 @@ public class UI {
         put(content, toastLabel, 20, 46, 640, 34);
     }
 
+    void createObjective() {
+        objectiveLabel = label("", 15, WHITE);
+        objectiveLabel.setOpaque(true);
+        objectiveLabel.setBackground(PANEL);
+        objectiveLabel.setBorder(new LineBorder(RED, 2));
+        objectiveLabel.setVisible(false);
+        put(content, objectiveLabel, 20, 490, 920, 36);
+    }
+
+    void createMessageBox() {
+        nameLabel = label("", 15, WHITE);
+        nameLabel.setOpaque(true);
+        nameLabel.setBackground(RED);
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
+        nameLabel.setVisible(false);
+        put(content, nameLabel, 176, 378, 300, 26);
+
+        portraitLabel = new JLabel();
+        portraitLabel.setOpaque(true);
+        portraitLabel.setBackground(NAVY);
+        portraitLabel.setBorder(new LineBorder(RED, 3));
+        portraitLabel.setVisible(false);
+        put(content, portraitLabel, 28, 368, 128, 128);
+
+        msgPanel = new JPanel(null);
+        msgPanel.setBackground(PANEL);
+        msgPanel.setBorder(new LineBorder(RED, 4));
+        msgPanel.setVisible(false);
+
+        messageText = new JTextArea();
+        messageText.setBackground(PANEL);
+        messageText.setForeground(WHITE);
+        messageText.setEditable(false);
+        messageText.setFocusable(false);
+        messageText.setLineWrap(true);
+        messageText.setWrapStyleWord(true);
+        messageText.setFont(font(19));
+        put(content, msgPanel, 20, 392, 920, 128);
+        put(msgPanel, messageText, 24, 14, 870, 100);
+
+        MouseAdapter advance = new MouseAdapter() {
+            public void mousePressed(MouseEvent e) { gm.ev.next(); }
+        };
+        msgPanel.addMouseListener(advance);
+        messageText.addMouseListener(advance);
+        portraitLabel.addMouseListener(advance);
+        nameLabel.addMouseListener(advance);
+    }
+
+        
+
 
 
 
