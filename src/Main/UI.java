@@ -130,17 +130,17 @@ public class UI {
     //===================================================
     static Font font(int size) { return new Font(Font.MONOSPACED, Font.BOLD, size); }
 
-    /** Adds a component using LOGICAL (960x540) coordinates and remembers them so it can be re-scaled. 
+    // Adds a component using LOGICAL (960x540) coordinates and remembers them so it can be re-scaled. 
     void put(Container parent, JComponent c, int x, int y, int w, int h) {
         parent.add(c);
         Placed p = new Placed();
         p.c = c; p.x = x; p.y = y; p.w = w; p.h = h;
         p.top = (parent == content);
-        p.font = (c instanceof JPanel || c instanceof MenuButton || c instanceof Pointer || c instanceof Divider) ? 0 : c.getFont().getSize();
+        // p.font = (c instanceof JPanel || c instanceof MenuButton || c instanceof Pointer || c instanceof Divider) ? 0 : c.getFont().getSize();
         placed.add(p);
         placedOf.put(c, p);
         apply(p);
-    } */
+    } 
 
     void apply(Placed p) {
         int x = (int) Math.round(p.x * k) + (p.top ? offset_x : 0);
@@ -227,7 +227,19 @@ public class UI {
         return b;
     }
 
-    
+    // =====================================================================================
+    // building the screens
+    // =====================================================================================
+    void createToast() {
+        toastLabel = label("", 16, WHITE);
+        toastLabel.setOpaque(true);
+        toastLabel.setBackground(PANEL);
+        toastLabel.setBorder(BorderFactory.createCompoundBorder(new LineBorder(YELLOW, 2), BorderFactory.createEmptyBorder(0, 10, 0, 10)));
+        toastLabel.setVisible(false);
+        put(content, toastLabel, 20, 46, 640, 34);
+    }
+
+
 
 
 
