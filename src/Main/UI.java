@@ -555,6 +555,61 @@ public class UI {
         }
     }
 
+    /** The red arrow that points at the selected title button. */
+    static class Pointer extends JComponent {
+        protected void paintComponent(Graphics g0) {
+            Graphics2D g = (Graphics2D) g0.create();
+            g.scale(getWidth() / 22.0, getHeight() / 20.0);
+            g.setColor(BTN_SEL);
+            g.fillPolygon(new int[]{2, 18, 2}, new int[]{1, 10, 19}, 3);
+            g.setColor(new Color(0xe0383b));
+            g.fillPolygon(new int[]{4, 12, 4}, new int[]{5, 10, 6}, 3);
+            g.dispose();
+        }
+    }
+
+    /** Thin line with a red square in the middle, under the logo. */
+    static class Divider extends JComponent {
+        protected void paintComponent(Graphics g0) {
+            Graphics2D g = (Graphics2D) g0.create();
+            g.scale(getWidth() / 280.0, getHeight() / 14.0);
+            g.setColor(new Color(0xafbdc9));
+            g.fillRect(0, 6, 120, 2);
+            g.fillRect(160, 6, 120, 2);
+            g.setColor(BTN_SEL);
+            g.fillRect(133, 3, 14, 8);
+            g.dispose();
+        }
+    }
+
+    /** The light framed panel behind the menu, with notched corners and a soft double border. */
+    static class TitleCard extends JComponent {
+        protected void paintComponent(Graphics g0) {
+            Graphics2D g = (Graphics2D) g0.create();
+            g.scale(getWidth() / 460.0, getHeight() / 480.0);
+            g.setColor(new Color(0x5d6b84)); pixelRect(g, 4, 4, 456, 476);        // shadow
+            g.setColor(CARD_EDGE);           pixelRect(g, 0, 0, 456, 476);        // border
+            g.setColor(new Color(0xc9d6e6)); pixelRect(g, 3, 3, 450, 470);        // inner line
+            g.setColor(CARD);                pixelRect(g, 5, 5, 446, 466);        // paper
+            g.dispose();
+        }
+    }
+
+    void titleClick(int i) {
+        if (menu.isOpen()) return;
+        if (i == 0) gm.ev.startGame();
+        else if (i == 1) { if (!gm.saves.load(0)) toast("No autosave yet. Start a new game!", 2.5); }
+        else if (i == 2) menu.open("load", "");
+        else if (i == 3) menu.open("settings", "");
+        else gm.quit();
+    }
+
+    /** CONTINUE is only available when an autosave exists. */
+    public void refreshTitleButtons() {
+        titleButton[1].setEnabled(gm.saves.exists(0));
+    }
+    
+
 
 
 
