@@ -608,6 +608,99 @@ public class UI {
     public void refreshTitleButtons() {
         titleButton[1].setEnabled(gm.saves.exists(0));
     }
+
+    void createCardPanel() {
+        cardPanel = new JPanel(null);
+        cardPanel.setBackground(Color.black);
+        cardTitle = label("", 72, WHITE);
+        cardTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        cardSub = label("", 32, WHITE);
+        cardSub.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel hint = label("click to continue", 16, new Color(0x8a96c4));
+        hint.setHorizontalAlignment(SwingConstants.CENTER);
+        cardPanel.setVisible(false);
+        put(content, cardPanel, 0, 0, 960, 540);
+        put(cardPanel, cardTitle, 0, 170, 960, 100);
+        put(cardPanel, cardSub, 0, 285, 960, 40);
+        put(cardPanel, hint, 0, 470, 960, 20);
+        cardPanel.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) { gm.ev.cardClicked(); }
+        });
+    }
+
+    void createDeployPanel() {
+        deployPanel = new JPanel(null);
+        deployPanel.setBackground(new Color(0x0b1230));
+        deployPanel.setBorder(new LineBorder(RED, 4));
+        JLabel title = label(" IntelliJ IDEA", 14, WHITE);
+        title.setOpaque(true);
+        title.setBackground(NAVY2);
+        JLabel q = label("DEPLOY POLYMORPHIC BUILD TO PRODUCTION?", 17, WHITE);
+        q.setHorizontalAlignment(SwingConstants.CENTER);
+        JButton yes = button("Y - DEPLOY", 16, new Color(0x1f6b3a));
+        JButton no = button("N - WAIT", 16, new Color(0x6b1f2a));
+        yes.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { gm.ev.deploy(true); } });
+        no.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { gm.ev.deploy(false); } });
+        deployPanel.setVisible(false);
+        put(content, deployPanel, 250, 190, 460, 180);
+        put(deployPanel, title, 0, 0, 460, 26);
+        put(deployPanel, q, 0, 50, 460, 30);
+        put(deployPanel, yes, 60, 110, 150, 46);
+        put(deployPanel, no, 250, 110, 150, 46);
+    }
+
+    void createPuzzlePanel() {
+        puzzlePanel = new JPanel(null);
+        puzzlePanel.setBackground(new Color(0x0b1230));
+        puzzlePanel.setBorder(new LineBorder(RED, 3));
+        puzzlePanel.setVisible(false);
+        put(content, puzzlePanel, 30, 44, 900, 476);
+
+        puzTitle = label("", 15, YELLOW);
+        puzInstr = label("", 16, WHITE);
+        puzCode = new JTextArea();
+        puzCode.setBackground(new Color(0x050a1e));
+        puzCode.setForeground(new Color(0xaecbff));
+        puzCode.setFont(font(16));
+        puzCode.setEditable(false);
+        puzCode.setFocusable(false);
+        puzTimer = label("", 24, WHITE);
+        puzTimerBar = new JProgressBar(0, 100);
+        puzStep = label("", 13, new Color(0xaecbff));
+        puzHint = button("HINT (+4 debt)", 12, new Color(0x6b5a1f));
+        puzGc = button("RUN GC", 14, new Color(0x1f6b3a));
+        puzHint.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { gm.puzzle.hint(); } });
+        puzGc.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { gm.puzzle.gc(); } });
+        puzFeedback = new JTextArea();
+        puzFeedback.setBackground(new Color(0x050a1e));
+        puzFeedback.setForeground(WHITE);
+        puzFeedback.setFont(font(15));
+        puzFeedback.setEditable(false);
+        puzFeedback.setFocusable(false);
+        puzFeedback.setLineWrap(true);
+        puzFeedback.setWrapStyleWord(true);
+
+        put(puzzlePanel, puzTitle, 20, 10, 860, 24);
+        put(puzzlePanel, puzInstr, 20, 38, 860, 26);
+        put(puzzlePanel, puzCode, 20, 76, 580, 170);
+        put(puzzlePanel, puzTimer, 630, 76, 260, 34);
+        put(puzzlePanel, puzTimerBar, 630, 114, 250, 14);
+        put(puzzlePanel, puzStep, 630, 134, 250, 18);
+        put(puzzlePanel, puzHint, 630, 166, 130, 38);
+        put(puzzlePanel, puzGc, 770, 166, 110, 38);
+        for (int i = 0; i < 4; i++) {
+            final int choice = i;
+            puzOption[i] = button("", 14, NAVY2);
+            puzOption[i].setHorizontalAlignment(SwingConstants.LEFT);
+            puzOption[i].addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) { gm.puzzle.choose(choice); }
+            });
+            put(puzzlePanel, puzOption[i], 20 + (i % 2) * 440, 264 + (i / 2) * 56, 420, 46);
+        }
+        put(puzzlePanel, puzFeedback, 20, 384, 860, 70);
+    }
+
+    
     
 
 

@@ -39,4 +39,57 @@ public class MenuUI {
         title = ui.label("", 36, UI.WHITE);
         title.setHorizontalAlignment(SwingConstants.CENTER);
         ui.put(panel, title, 0, 36, 960, 50);
-}
+
+        for (int i = 0; i < 7; i++) {
+            final int id = i;
+            btn[i] = new UI.MenuButton("", 580, 44, 16);
+            btn[i].addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) { click(id); }
+            });
+            ui.put(panel, btn[i], 190, 108 + i * 52, 580, 44);
+        }
+
+        logArea = new JTextArea();
+        logArea.setBackground(UI.PANEL);
+        logArea.setForeground(UI.WHITE);
+        logArea.setFont(UI.font(14));
+        logArea.setEditable(false);
+        logArea.setFocusable(false);
+        logArea.setLineWrap(true);
+        logArea.setWrapStyleWord(true);
+        logArea.setVisible(false);
+        ui.put(panel, logArea, 90, 100, 780, 310);
+
+        info = ui.label("", 15, UI.YELLOW);
+        info.setHorizontalAlignment(SwingConstants.CENTER);
+        ui.put(panel, info, 0, 486, 960, 24);
+    }
+
+        public boolean isOpen() { return panel.isVisible(); }
+
+    /** Esc key: closes the menu, or opens the pause menu while playing. */
+    public void toggle() {
+        if (isOpen()) close();
+        else if (gm.sc.current >= 1 && gm.sc.current < 10) open("pause", "");
+    }
+
+    public void open(String p, String backTo) {
+        shade = (gm.sc.current == 0) ? 248 : 225;
+        panel.setVisible(true);
+        show(p, backTo);
+    }
+
+    public void close() {
+        panel.setVisible(false);
+        gm.ev.refresh();
+    }
+
+    // ---------------------------------------------------------------- pages
+    private void setButtons(String... text) {
+        for (int i = 0; i < 7; i++) {
+            btn[i].setVisible(i < text.length);
+            if (i < text.length) btn[i].setText(text[i]);
+        }
+        logArea.setVisible(false);
+    }
+
