@@ -63,4 +63,23 @@ public class MenuUI {
         info = ui.label("", 15, UI.YELLOW);
         info.setHorizontalAlignment(SwingConstants.CENTER);
         ui.put(panel, info, 0, 486, 960, 24);
-}
+    }
+
+        public boolean isOpen() { return panel.isVisible(); }
+
+    /** Esc key: closes the menu, or opens the pause menu while playing. */
+    public void toggle() {
+        if (isOpen()) close();
+        else if (gm.sc.current >= 1 && gm.sc.current < 10) open("pause", "");
+    }
+
+    public void open(String p, String backTo) {
+        shade = (gm.sc.current == 0) ? 248 : 225;
+        panel.setVisible(true);
+        show(p, backTo);
+    }
+
+    public void close() {
+        panel.setVisible(false);
+        gm.ev.refresh();
+    }
