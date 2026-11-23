@@ -9,7 +9,6 @@ import java.util.HashMap;
 import javax.swing.Timer;
 
 /*
-    The brain of the game:
     1. plays the dialogue script (script/dialogue.txt) and runs its @commands
  */
 
