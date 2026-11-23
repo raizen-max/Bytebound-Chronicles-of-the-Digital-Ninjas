@@ -48,4 +48,15 @@ public class MenuUI {
             });
             ui.put(panel, btn[i], 190, 108 + i * 52, 580, 44);
         }
+
+        logArea = new JTextArea();
+        logArea.setBackground(UI.PANEL);
+        logArea.setForeground(UI.WHITE);
+        logArea.setFont(UI.font(14));
+        logArea.setEditable(false);
+        logArea.setFocusable(false);
+        logArea.setLineWrap(true);
+        logArea.setWrapStyleWord(true);
+        logArea.setVisible(false);
+        ui.put(panel, logArea, 90, 100, 780, 310);
 }
