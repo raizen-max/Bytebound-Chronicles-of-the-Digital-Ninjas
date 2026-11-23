@@ -26,5 +26,19 @@ public class Settings {
             // no settings file yet (or it is broken): keep the defaults
         }
     }
-    
+
+    public void save() {
+        try {
+            Properties p = new Properties();
+            p.setProperty("animations", "" + animations);
+            p.setProperty("fullscreen", "" + fullscreen);
+            p.setProperty("windowW", "" + windowW);
+            p.setProperty("windowH", "" + windowH);
+            FileOutputStream out = new FileOutputStream(FILE);
+            p.store(out, "Bytebound settings");
+            out.close();
+        } catch (Exception e) {
+            System.out.println("Could not save settings: " + e.getMessage());
+        }
+    } 
 }
