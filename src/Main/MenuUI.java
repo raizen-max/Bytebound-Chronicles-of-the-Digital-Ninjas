@@ -20,5 +20,16 @@ public class MenuUI {
     JTextArea logArea;
     String page = "", back = "";
     int shade = 225; 
-    
+
+    public MenuUI(GameManager gm, UI ui) {
+        this.gm = gm;
+        this.ui = ui;
+
+        panel = new JPanel(null) {
+            protected void paintComponent(Graphics g) {            // dark see-through background
+                g.setColor(new Color(5, 8, 20, shade));
+                g.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+
 }
