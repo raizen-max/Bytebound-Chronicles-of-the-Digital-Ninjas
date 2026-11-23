@@ -132,3 +132,46 @@ public class MenuUI {
         }
     }
 
+    // ---------------------------------------------------------------- what each button does
+    void click(int i) {
+        Settings s = gm.settings;
+        if (page.equals("pause")) {
+            if (i == 0) close();
+            else if (i == 1) show("save", "pause");
+            else if (i == 2) show("load", "pause");
+            else if (i == 3) show("settings", "pause");
+            else if (i == 4) show("log", "pause");
+            else if (i == 5) show("quit", "pause");
+        } else if (page.equals("settings")) {
+            if (i == 0) s.animations = !s.animations;
+            else if (i == 1) {
+                s.fullscreen = !s.fullscreen;
+                ui.window.setExtendedState(s.fullscreen ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
+            } else { s.save(); goBack(); return; }
+            s.save();
+            show("settings", back);
+        } else if (page.equals("save")) {
+            if (i == 3) { goBack(); return; }
+            if (!gm.canSave()) { info.setText("You can only save while exploring a scene."); return; }
+            boolean ok = gm.saves.save(i + 1, false);
+            show("save", back);
+            info.setText(ok ? "Saved to slot " + (i + 1) + "!" : "Could not write the save file.");
+        } else if (page.equals("load")) {
+            if (i == 4) { goBack(); return; }
+            if (!gm.saves.exists(i)) { info.setText("That slot is empty."); return; }
+            panel.setVisible(false);
+            if (!gm.saves.load(i)) { panel.setVisible(true); info.setText("That save file is broken."); }
+        } else if (page.equals("log")) {
+            goBack();
+        } else if (page.equals("quit")) {
+            if (i == 0) { panel.setVisible(false); gm.toTitle(); }
+            else goBack();
+        }
+    }
+
+    void goBack() {
+        if (back.equals("")) close();
+        else show(back, "");
+    }
+}
+
