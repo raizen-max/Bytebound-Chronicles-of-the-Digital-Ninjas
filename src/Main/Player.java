@@ -36,4 +36,11 @@ public class Player {
         return true;
     }
     
+    /** Gives a reward only once per key (stops duplicate rewards). */
+    public boolean claim(String key) {
+        if (has("reward:" + key)) return false;
+        set("reward:" + key);
+        return true;
+    }
+    
 }
