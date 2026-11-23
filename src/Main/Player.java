@@ -43,4 +43,15 @@ public class Player {
         return true;
     }
     
+    // ---------- meters ----------
+    public void changeSanity(int d) { sanity = Math.max(0, Math.min(100, sanity + d)); }
+    public void changeDebt(int d) { techDebt = Math.max(0, Math.min(100, techDebt + d)); }
+    public void changeHeap(double d) { heap = Math.max(0, Math.min(100, heap + d)); }
+
+    public void wrongAnswer() { mistakes++; changeSanity(-8); changeDebt(6); changeHeap(2); }
+    public void usedHint()    { hints++; changeDebt(4); }
+    public void timeout()     { timeouts++; changeSanity(-15); changeDebt(10); changeHeap(5); }
+    public void cleanStep()   { changeSanity(2); }
+
+    
 }
