@@ -31,5 +31,8 @@ public class MenuUI {
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
         };
-
+        panel.setOpaque(false);
+        panel.addMouseListener(new MouseAdapter() { });             // swallow clicks so the game underneath ignores them
+        panel.setVisible(false);
+        ui.put(ui.content, panel, 0, 0, 960, 540);
 }
