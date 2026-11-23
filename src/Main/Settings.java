@@ -11,5 +11,20 @@ public class Settings {
     boolean animations = true;  // idle + talking animations
     boolean fullscreen = false; // maximized window
     int windowW = 960, windowH = 540;
+
+    public void load() {
+        try {
+            Properties p = new Properties();
+            FileInputStream in = new FileInputStream(FILE);
+            p.load(in);
+            in.close();
+            animations = p.getProperty("animations", "true").equals("true");
+            fullscreen = p.getProperty("fullscreen", "false").equals("true");
+            windowW = Integer.parseInt(p.getProperty("windowW", "960"));
+            windowH = Integer.parseInt(p.getProperty("windowH", "540"));
+        } catch (Exception e) {
+            // no settings file yet (or it is broken): keep the defaults
+        }
+    }
     
 }
