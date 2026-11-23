@@ -93,3 +93,42 @@ public class MenuUI {
         logArea.setVisible(false);
     }
 
+    void show(String p, String backTo) {
+        page = p;
+        back = backTo;
+        info.setText("");
+        if (p.equals("pause")) {
+            title.setText("PAUSED");
+            setButtons("RESUME", "SAVE GAME", "LOAD GAME", "SETTINGS", "DIALOGUE LOG", "QUIT TO TITLE");
+        } else if (p.equals("settings")) {
+            title.setText("SETTINGS");
+            Settings s = gm.settings;
+            setButtons("ANIMATIONS:  " + (s.animations ? "ON" : "OFF"),
+                    "FULLSCREEN:  " + (s.fullscreen ? "ON" : "OFF"),
+                    "BACK");
+        } else if (p.equals("save")) {
+            title.setText("SAVE GAME");
+            setButtons("SLOT 1:  " + gm.saves.describe(1), "SLOT 2:  " + gm.saves.describe(2),
+                    "SLOT 3:  " + gm.saves.describe(3), "BACK");
+            info.setText(gm.canSave() ? "Pick a slot to save (overwrites it)." : "You can only save while exploring a scene.");
+        } else if (p.equals("load")) {
+            title.setText("LOAD GAME");
+            setButtons("AUTOSAVE:  " + gm.saves.describe(0), "SLOT 1:  " + gm.saves.describe(1),
+                    "SLOT 2:  " + gm.saves.describe(2), "SLOT 3:  " + gm.saves.describe(3), "BACK");
+            info.setText("The autosave is made at the start of every scene.");
+        } else if (p.equals("log")) {
+            title.setText("DIALOGUE LOG");
+            setButtons("", "", "", "", "", "", "BACK");
+            for (int i = 0; i < 6; i++) btn[i].setVisible(false);
+            String text = "";
+            int from = Math.max(0, ui.log.size() - 9);
+            for (int i = from; i < ui.log.size(); i++) text += ui.log.get(i) + "\n\n";
+            logArea.setText(text.equals("") ? "(nothing said yet)" : text);
+            logArea.setVisible(true);
+        } else if (p.equals("quit")) {
+            title.setText("QUIT TO TITLE?");
+            setButtons("YES, QUIT TO TITLE", "CANCEL");
+            info.setText("Progress since the last save is lost. Your autosave stays.");
+        }
+    }
+
