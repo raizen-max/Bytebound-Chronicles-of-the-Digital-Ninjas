@@ -83,3 +83,13 @@ public class MenuUI {
         panel.setVisible(false);
         gm.ev.refresh();
     }
+
+    // ---------------------------------------------------------------- pages
+    private void setButtons(String... text) {
+        for (int i = 0; i < 7; i++) {
+            btn[i].setVisible(i < text.length);
+            if (i < text.length) btn[i].setText(text[i]);
+        }
+        logArea.setVisible(false);
+    }
+
