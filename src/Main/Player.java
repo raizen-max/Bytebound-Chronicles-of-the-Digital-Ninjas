@@ -53,5 +53,23 @@ public class Player {
     public void timeout()     { timeouts++; changeSanity(-15); changeDebt(10); changeHeap(5); }
     public void cleanStep()   { changeSanity(2); }
 
+    /** Manual garbage collection: -4% heap, 4 second cooldown, never below 85%. Returns a message. */
+    public String gc() {
+        if (gcCooldown > 0) return "GC is cooling down (" + (int) Math.ceil(gcCooldown) + "s)";
+        if (heap <= 85) return "Heap is already as clean as it can get";
+        heap = Math.max(85, heap - 4);
+        gcCooldown = 4;
+        return "Manual GC: heap -4%";
+    }
+
+    public boolean isGameOver() { return heap >= 100 || sanity <= 0; }
+
+    /** The ending rules from the script. 10 = A (Rank S), 11 = B (Rank B), 12 = Game Over. */
+    public int decideEnding() {
+        if (isGameOver()) return 12;
+        if (techDebt < 20 && sanity > 60) return 10;
+        return 11;
+    }
+
     
 }
