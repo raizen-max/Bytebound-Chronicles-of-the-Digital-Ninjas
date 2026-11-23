@@ -35,4 +35,8 @@ public class MenuUI {
         panel.addMouseListener(new MouseAdapter() { });             // swallow clicks so the game underneath ignores them
         panel.setVisible(false);
         ui.put(ui.content, panel, 0, 0, 960, 540);
+
+        title = ui.label("", 36, UI.WHITE);
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        ui.put(panel, title, 0, 36, 960, 50);
 }
