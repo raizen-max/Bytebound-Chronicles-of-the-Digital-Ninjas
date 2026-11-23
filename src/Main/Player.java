@@ -71,5 +71,10 @@ public class Player {
         return 11;
     }
 
+    public void reset() {
+        sanity = 100; techDebt = 0; heap = 22; gcCooldown = 0; alarm = false;
+        mistakes = 0; hints = 0; timeouts = 0; playSeconds = 0;
+        flags.clear();
+    }
     
 }
