@@ -39,4 +39,13 @@ public class MenuUI {
         title = ui.label("", 36, UI.WHITE);
         title.setHorizontalAlignment(SwingConstants.CENTER);
         ui.put(panel, title, 0, 36, 960, 50);
+
+        for (int i = 0; i < 7; i++) {
+            final int id = i;
+            btn[i] = new UI.MenuButton("", 580, 44, 16);
+            btn[i].addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) { click(id); }
+            });
+            ui.put(panel, btn[i], 190, 108 + i * 52, 580, 44);
+        }
 }
