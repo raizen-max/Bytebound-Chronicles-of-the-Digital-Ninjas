@@ -59,4 +59,8 @@ public class MenuUI {
         logArea.setWrapStyleWord(true);
         logArea.setVisible(false);
         ui.put(panel, logArea, 90, 100, 780, 310);
+
+        info = ui.label("", 15, UI.YELLOW);
+        info.setHorizontalAlignment(SwingConstants.CENTER);
+        ui.put(panel, info, 0, 486, 960, 24);
 }
