@@ -1,15 +1,19 @@
 package src.Main;
 
-// runs a puzzle, data located in Puzzles.java
+/**
+ * Runs a puzzle: shows each step, checks the answer, gives feedback.
+ * There is NO time limit: take as long as you like. (Mistakes still cost sanity, tech debt and heap.)
+ * The puzzle data is in Puzzles.java.
+ */
 public class PuzzleHandler {
 
     GameManager gm;
     Puzzles p;
     boolean active = false;
     int step = 0;
-    int state = 0;            
-    double timeLeft, feedbackTimer;
-    double limit, heapRate;     
+    int state = 0;         
+    double feedbackTimer;
+    boolean warned = false;   
 
     public PuzzleHandler(GameManager gm) { this.gm = gm; }
 
@@ -17,9 +21,7 @@ public class PuzzleHandler {
         p = Puzzles.get(id);
         active = true;
         step = 0;
-        limit = p.timeLimit;
-        heapRate = p.heapPerSecond;
-        timeLeft = limit;
+        warned = false;
         gm.ui.puzzlePanel.setVisible(true);
         gm.ui.toastLabel.setVisible(false);
         gm.ui.hideMessage();          // no dialogue box behind the puzzle window
@@ -49,6 +51,10 @@ public class PuzzleHandler {
             gm.ui.puzOption[i].setEnabled(false);
             gm.player.wrongAnswer();
             gm.ui.puzFeedback.setText("COMPILATION ERROR. Try again. (Sanity -8, Tech Debt +6, Heap +2)");
+            if (p.gcButton && gm.player.heap >= 96 && !warned) {
+                warned = true;
+                gm.ui.puzFeedback.setText("FARSEER: Heap at " + (int) gm.player.heap + " percent! Trigger a manual sweep - now!");
+            }
         }
     }
 
@@ -61,37 +67,22 @@ public class PuzzleHandler {
     public void gc() {
         if (!active || state != 0 || !p.gcButton) return;
         gm.ui.puzFeedback.setText(gm.player.gc());
+        if (gm.player.heap < 96) warned = false;
     }
 
+    /** Called every 0.1 seconds by the EventHandler timer. Only used to move on after a correct answer. */
     public void tick(double dt) {
-        if (state == 0) {
-            gm.player.changeHeap(heapRate * dt);
-            if (limit > 0) {
-                timeLeft -= dt;
-                if (timeLeft <= 0) {
-                    timeLeft = 0;
-                    gm.player.timeout();
-                    state = 2;
-                    feedbackTimer = 2.2;
-                    gm.ui.puzFeedback.setText("TIME'S UP! Alex slaps in a quick hack. (Sanity -15, Tech Debt +10)");
-                }
-            }
-            if (p.gcButton && gm.player.heap >= 96)
-                gm.ui.puzFeedback.setText("FARSEER: Heap at " + (int) gm.player.heap + " percent! Trigger a manual sweep - now!");
-        } else {
-            feedbackTimer -= dt;
-            if (feedbackTimer <= 0) {
-                if (state == 2) { finish(true); return; }
-                step++;
-                if (step >= p.correct.length) finish(false); else showStep();
-            }
+        if (state != 1) return;
+        feedbackTimer -= dt;
+        if (feedbackTimer <= 0) {
+            step++;
+            if (step >= p.correct.length) finish(); else showStep();
         }
-        gm.ui.updatePuzzleTimer(p, timeLeft, limit);
     }
 
-    private void finish(boolean timedOut) {
+    private void finish() {
         active = false;
         gm.ui.puzzlePanel.setVisible(false);
-        gm.ev.puzzleDone(p.id, timedOut);
+        gm.ev.puzzleDone(p.id);
     }
 }
