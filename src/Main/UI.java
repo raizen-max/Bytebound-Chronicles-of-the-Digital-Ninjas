@@ -1092,7 +1092,46 @@ public class UI {
         markerFrame = newFrame;
     }
 
-    
+    // Loads the talk frames of a character
+    ArrayList<ImageIcon> getTalkFrames(String who) {
+        String key = who + "@" + k;
+        if (!talkFrames.containsKey(key)) {
+            ArrayList<ImageIcon> list = new ArrayList<ImageIcon>();
+            int i = 0;
+            while (findImage("portraits", who + "_talk_" + i) != null) {
+                list.add(icon("portraits", who + "_talk_" + i, 128, 128));
+                i++;
+            }
+            talkFrames.put(key, list);
+        }
+        return talkFrames.get(key);
+    }
+
+    /** Runs every 0.1 s: plays the next talk frame, then goes back to the resting portrait. */
+    void animateTalk() {
+        if (talkTicks <= 0) return;
+        ArrayList<ImageIcon> frames = getTalkFrames(talkSpeaker);
+        ImageIcon ic = frames.get(talkIndex % frames.size());
+        talkIndex++;
+        talkTicks--;
+        if (talkTicks == 0) ic = icon("portraits", talkSpeaker + "_" + talkExpr, 128, 128);
+        portraitLabel.setIcon(ic);
+        if (talkSpeaker.equals(popupName)) popupPortrait.setIcon(ic);
+    }
+
+    void showPopup(String name) {
+        popupName = name;
+        String kind = name.equals("haversam") ? "Slack huddle" : name.equals("kilver") ? "Speakerphone" : "Slack DM";
+        popupTitle.setText(kind + " - " + name.substring(0, 1).toUpperCase() + name.substring(1));
+        popupPortrait.setIcon(icon("portraits", name + "_neutral", 128, 128));
+        popupRole.setText("<html>" + Cast.role(name.toUpperCase()) + "</html>");
+        popupPanel.setVisible(true);
+    }
+
+    public void hidePopup() {
+        popupName = "";
+        popupPanel.setVisible(false);
+    }
 
     
 
