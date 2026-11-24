@@ -930,5 +930,11 @@ public class UI {
         hideMessage();
     }
 
+    public boolean overlayShowing() {
+        return cardPanel.isVisible() || screenPanel.isVisible() || gameOverPanel.isVisible() || creditsPanel.isVisible() || deployPanel.isVisible() || puzzlePanel.isVisible();
+    }
+
     
+
+
 }
