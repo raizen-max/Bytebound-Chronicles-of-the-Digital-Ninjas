@@ -1004,6 +1004,39 @@ public class UI {
         objectiveLabel.setVisible(!text.equals(""));
     }
 
+    // =====================================================================================
+    // message box + typewriter
+    // =====================================================================================
+    public void showLine(String speaker, String expr, String text) {
+        objectiveLabel.setVisible(false);
+        msgPanel.setVisible(true);
+        boolean narrator = speaker.equals("NARRATOR") || expr.equals("-");
+        log.add((narrator ? "" : speaker + ": ") + text);
+        if (log.size() > 60) log.remove(0);
+
+        if (narrator) {
+            talkTicks = 0;
+            portraitWho = "";
+            portraitLabel.setVisible(false);
+            nameLabel.setVisible(false);
+            move(messageText, 24, 14, 870, 100);
+            messageText.setForeground(new Color(0xc9d1f0));
+        } else {
+            String who = speaker.toLowerCase();
+            portraitWho = who;
+            portraitExpr = expr;
+            portraitLabel.setVisible(true);
+            String role = Cast.role(speaker);
+            nameLabel.setText(who.substring(0, 1).toUpperCase() + who.substring(1) + (role.equals("") ? "" : "  -  " + role));
+            move(nameLabel, 176, 378, nameLabel.getText().length() * 9 + 24, 26);
+            nameLabel.setVisible(true);
+            move(messageText, 150, 14, 744, 100);
+            messageText.setForeground(WHITE);
+            refreshPortrait();
+            if (who.equals(popupName)) popupPortrait.setIcon(icon("portraits", who + "_" + expr, 128, 128));
+
+            
+
     
 
 
