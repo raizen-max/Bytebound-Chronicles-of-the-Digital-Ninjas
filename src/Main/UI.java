@@ -743,7 +743,20 @@ public class UI {
         gm.settings.fullscreen = on;
     }
 
+    // =====================================================================================
+    // clicking hotspots
+    // =====================================================================================
+    class HotspotClick extends MouseAdapter {
+        Hotspot h;
+        HotspotClick(Hotspot h) { this.h = h; }
+        public void mousePressed(MouseEvent e) { gm.ev.clickHotspot(h); }
+        public void mouseEntered(MouseEvent e) { h.area.setBorder(new LineBorder(WHITE, 2)); }
+        public void mouseExited(MouseEvent e) { h.area.setBorder(null); }
+    }
+
     
+
+
 
     
     
