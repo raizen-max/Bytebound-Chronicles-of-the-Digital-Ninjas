@@ -957,6 +957,53 @@ public class UI {
         heapBar.setForeground(p.heap < 60 ? new Color(0x4cd97b) : p.heap < 90 ? YELLOW : RED);
     }
 
+    public void toast(String text, double seconds) {
+        toastLabel.setText("<html>" + text + "</html>");
+        move(toastLabel, 20, 46, 640, text.length() > 62 ? 54 : 34);
+        toastLabel.setVisible(true);
+        toastTime = seconds;
+    }
+
+    /** Called every 0.1 s by the EventHandler timer. */
+    public void tick(double dt) {
+        animateTalk();
+        animateMarkers();
+        if (toastTime > 0) {
+            toastTime -= dt;
+            if (toastTime <= 0) toastLabel.setVisible(false);
+        }
+        if (creditsPanel.isVisible()) {
+            creditsTime += dt;
+            creditsPanel.repaint();
+        }
+    }
+
+    public void refreshHotspots() {
+        for (int i = 0; i < hotspots.size(); i++) {
+            Hotspot h = hotspots.get(i);
+            boolean shown = gm.ev.isShown(h);
+            h.area.setVisible(shown);
+            if (!shown) h.area.setBorder(null);          // do not leave the white hover frame behind
+            boolean needed = shown && gm.ev.isUnlocked(h) && !gm.ev.talking && !gm.puzzle.active;   // only when you can click it
+            h.marker.setVisible(needed);
+            if (needed) h.marker.setIcon(icon("ui", "hotspot_" + markerFrame, MARKER, MARKER));
+        }
+    }
+
+    /** Shows the first objective the player has not completed yet. */
+    public void refreshObjective() {
+        int s = gm.sc.current;
+        String text = "";
+        if (s >= 1 && s < 10 && !gm.ev.talking && !gm.puzzle.active) {
+            String[][] rows = SceneData.objectives(s);
+            for (int i = 0; i < rows.length; i++) {
+                if (!gm.player.hasAll(rows[i][0])) { text = rows[i][1]; break; }
+            }
+        }
+        objectiveLabel.setText("  OBJECTIVE:  " + text);
+        objectiveLabel.setVisible(!text.equals(""));
+    }
+
     
 
 
