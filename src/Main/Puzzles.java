@@ -4,8 +4,7 @@ package src.Main;
 public class Puzzles {
     public int id;
     public String title, file, doneDialogue;
-    public double heapPerSecond;    // how fast the JVM heap grows while the puzzle is open
-    public boolean gcButton;        // show the "RUN GC" button
+    public boolean gcButton;        // show the "RUN GC" button?
     public String[] instruction, hint, explanation;
     public String[][] code, options;
     public int[] correct;
@@ -15,7 +14,7 @@ public class Puzzles {
         p.id = id;
         switch (id) {
             case 1:
-                p.title = "PUZZLE 1: Refactor extends -> implements"; p.file = "CreditCardPayment.java"; p.heapPerSecond = 0.183333; p.gcButton = false; p.doneDialogue = "s5_after_p1";
+                p.title = "PUZZLE 1: Refactor extends -> implements"; p.file = "CreditCardPayment.java"; p.gcButton = false; p.doneDialogue = "s5_after_p1";
                 p.instruction = new String[] {"A credit card is-not-a database socket. Fix the class signature.", "Inject the database dependency through the constructor."};
                 p.code = new String[][] {
                     {"public class CreditCardPayment ____ {", "    private DatabaseConnection db;", "}"},
@@ -30,7 +29,7 @@ public class Puzzles {
                 p.explanation = new String[] {"implements Payable: payment now depends on an abstraction (Liskov Substitution fixed).", "Constructor injection: the dependency is supplied from outside, so it is loosely coupled."};
                 break;
             case 2:
-                p.title = "PUZZLE 2: Encapsulation & access modifiers"; p.file = "UserAccount.java"; p.heapPerSecond = 0; p.gcButton = false; p.doneDialogue = "s6_after_p2";
+                p.title = "PUZZLE 2: Encapsulation & access modifiers"; p.file = "UserAccount.java"; p.gcButton = false; p.doneDialogue = "s6_after_p2";
                 p.instruction = new String[] {"An external thread is writing account.balance = -9999.99. Lock the field down.", "Provide controlled read access with a getter.", "Add a negative-value validation check inside setBalance()."};
                 p.code = new String[][] {
                     {"public class UserAccount {", "    ____ double balance;", "}"},
@@ -47,7 +46,7 @@ public class Puzzles {
                 p.explanation = new String[] {"private: only UserAccount itself can touch balance now.", "public double getBalance(): controlled public access to a private field.", "Input validation: the setter now rejects negative balances before storing them."};
                 break;
             case 3:
-                p.title = "PUZZLE 3: Abstraction & dynamic method dispatch"; p.file = "Transaction.java"; p.heapPerSecond = 0.4; p.gcButton = true; p.doneDialogue = "s8_after_p3";
+                p.title = "PUZZLE 3: Abstraction & dynamic method dispatch"; p.file = "Transaction.java"; p.gcButton = true; p.doneDialogue = "s8_after_p3";
                 p.instruction = new String[] {"Make Transaction abstract so nobody can instantiate a raw one.", "Declare the abstract process() method.", "Mark the override in each concrete subclass.", "Replace the 300-line if-else with a polymorphic loop."};
                 p.code = new String[][] {
                     {"public ____ class Transaction {", "}"},
@@ -66,7 +65,7 @@ public class Puzzles {
                 p.explanation = new String[] {"abstract class: it defines the contract but cannot be instantiated.", "Subclasses are now forced to supply their own process().", "@Override: the compiler checks the signature matches Transaction.process().", "Dynamic method dispatch: each object runs its own process(). No instanceof chain!"};
                 break;
             case 4:
-                p.title = "MINI-FIX: Extract taxRate into a constants class"; p.file = "TaxConstants.java"; p.heapPerSecond = 0; p.gcButton = false; p.doneDialogue = "s5_tax_done";
+                p.title = "MINI-FIX: Extract taxRate into a constants class"; p.file = "TaxConstants.java"; p.gcButton = false; p.doneDialogue = "s5_tax_done";
                 p.instruction = new String[] {"Extract taxRate into a final utility constant class."};
                 p.code = new String[][] {
                     {"public final class TaxConstants {", "    ____", "}"}
@@ -79,7 +78,7 @@ public class Puzzles {
                 p.explanation = new String[] {"static final: one immutable value, so PaymentFactory no longer needs to inherit OrderProcessor."};
                 break;
             case 5:
-                p.title = "MINI-FIX: try-with-resources"; p.file = "ReportJob.java"; p.heapPerSecond = 0; p.gcButton = false; p.doneDialogue = "s6_try_done";
+                p.title = "MINI-FIX: try-with-resources"; p.file = "ReportJob.java"; p.gcButton = false; p.doneDialogue = "s6_try_done";
                 p.instruction = new String[] {"Close the Scanner and connection streams automatically."};
                 p.code = new String[][] {
                     {"____ (Scanner sc = new Scanner(System.in)) {", "    process(sc);", "}"}
@@ -92,7 +91,7 @@ public class Puzzles {
                 p.explanation = new String[] {"try-with-resources closes the resource automatically, even if an exception is thrown."};
                 break;
             case 6:
-                p.title = "MINI-FIX: Singleton connection manager"; p.file = "ConnectionManager.java"; p.heapPerSecond = 0; p.gcButton = false; p.doneDialogue = "s6_conn_done";
+                p.title = "MINI-FIX: Singleton connection manager"; p.file = "ConnectionManager.java"; p.gcButton = false; p.doneDialogue = "s6_conn_done";
                 p.instruction = new String[] {"Enforce a private constructor to make this a proper Singleton."};
                 p.code = new String[][] {
                     {"public class ConnectionManager {", "    ____ ConnectionManager() { }", "}"}
@@ -105,7 +104,7 @@ public class Puzzles {
                 p.explanation = new String[] {"private constructor: the class controls its single instance (no more new connections in loops)."};
                 break;
             case 7:
-                p.title = "MINI-FIX: Restore the DTO getters"; p.file = "UserDTO.java"; p.heapPerSecond = 0; p.gcButton = false; p.doneDialogue = "s7_dto_done";
+                p.title = "MINI-FIX: Restore the DTO getters"; p.file = "UserDTO.java"; p.gcButton = false; p.doneDialogue = "s7_dto_done";
                 p.instruction = new String[] {"Jackson needs public getters to serialize this DTO. Restore one."};
                 p.code = new String[][] {
                     {"public class UserDTO {", "    private String name;", "    ____", "}"}

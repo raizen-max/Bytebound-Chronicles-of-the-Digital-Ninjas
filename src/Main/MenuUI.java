@@ -1,4 +1,10 @@
 package src.Main;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -6,10 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
-/**
- * One full-screen overlay that shows different "pages": pause, settings, save, load, log, quit.
- * A page is just a title + up to 7 buttons. click(i) decides what button i does on the current page.
- */
+// Full-screen overlay that shows pause, settings, save, load, log, quit
+
 public class MenuUI {
 
     GameManager gm;
@@ -19,7 +23,7 @@ public class MenuUI {
     JButton[] btn = new JButton[7];
     JTextArea logArea;
     String page = "", back = "";
-    int shade = 225; 
+    int shade = 225;       
 
     public MenuUI(GameManager gm, UI ui) {
         this.gm = gm;
@@ -32,7 +36,7 @@ public class MenuUI {
             }
         };
         panel.setOpaque(false);
-        panel.addMouseListener(new MouseAdapter() { });             // swallow clicks so the game underneath ignores them
+        panel.addMouseListener(new MouseAdapter() { });          
         panel.setVisible(false);
         ui.put(ui.content, panel, 0, 0, 960, 540);
 
@@ -65,9 +69,9 @@ public class MenuUI {
         ui.put(panel, info, 0, 486, 960, 24);
     }
 
-        public boolean isOpen() { return panel.isVisible(); }
+    public boolean isOpen() { return panel.isVisible(); }
 
-    /** Esc key: closes the menu, or opens the pause menu while playing. */
+    // Esc key: closes the menu, or opens the pause menu while playing
     public void toggle() {
         if (isOpen()) close();
         else if (gm.sc.current >= 1 && gm.sc.current < 10) open("pause", "");
@@ -174,4 +178,3 @@ public class MenuUI {
         else show(back, "");
     }
 }
-

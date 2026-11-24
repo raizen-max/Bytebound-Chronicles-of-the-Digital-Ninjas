@@ -51,10 +51,11 @@ public class EventHandler {
         index = 0;
         talking = true;
         paused = false;
-        gm.ui.refreshHotspots();       // markers disappear while someone is talking
+        gm.ui.refreshHotspots();       // hotspot markers disappear while someone is talking
         advance();
     }
 
+    // when the player clicks the message box.
     public void next() {
         if (!talking || paused || gm.menu.isOpen()) return;
         if (gm.ui.isTyping()) gm.ui.finishTyping();     // 1st click: show the whole line
@@ -78,13 +79,14 @@ public class EventHandler {
                 if (runCommand(cmd.toUpperCase(), arg)) return;   // true = stop reading this dialogue
                 continue;
             }
-            String[] part = line.split("\\|", 3);   // SPEAKER | expression | text
+            String[] part = line.split("\\|", 3);  
             if (part.length < 3) continue;
             gm.ui.showLine(part[0].trim().toUpperCase(), part[1].trim().toLowerCase(), part[2].trim());
             return;
         }
     }
 
+    //Runs one @command from the script. Returns true if the dialogue must stop/pause here
     private boolean runCommand(String cmd, String arg) {
         Player p = gm.player;
         if (cmd.equals("FLAG")) p.set(arg);
@@ -107,6 +109,8 @@ public class EventHandler {
             paused = true;
             return true;
         }
+        else if (cmd.equals("SCREEN")) { gm.ui.showScreen(arg.toLowerCase()); paused = true; return true; }
+        else if (cmd.equals("GAMEOVER")) { gm.ui.showGameOver(); paused = true; return true; }
         else if (cmd.equals("CREDITS")) { gm.ui.showCredits(); paused = true; return true; }
         else if (cmd.equals("DEPLOY")) { gm.ui.deployPanel.setVisible(true); paused = true; return true; }
         else System.out.println("Unknown command: " + cmd);
@@ -120,10 +124,29 @@ public class EventHandler {
         advance();
     }
 
+    public void screenClicked() {
+        gm.ui.screenPanel.setVisible(false);
+        paused = false;
+        advance();
+    }
+
     public void creditsClicked() {
         if (gm.ui.creditsTime < 4) return;
         gm.ui.creditsPanel.setVisible(false);
         gm.toTitle();
+    }
+
+    /** Game Over screen buttons. */
+    public void gameOverChoice(int i) {
+        if (i == 0) {                                        // TRY AGAIN: replay the scene you failed in
+            gm.ui.gameOverPanel.setVisible(false);
+            if (!gm.saves.load(0)) gm.toTitle();
+        } else if (i == 1) {                                 // LOAD GAME
+            gm.menu.open("load", "");
+        } else {                                             // MAIN MENU
+            gm.ui.gameOverPanel.setVisible(false);
+            gm.toTitle();
+        }
     }
 
     public void deploy(boolean yes) {
@@ -131,9 +154,8 @@ public class EventHandler {
         startTalk(yes ? "s8_deploy_yes" : "s8_deploy_no");
     }
 
-    public void puzzleDone(int id, boolean timedOut) {
+    public void puzzleDone(int id) {
         gm.player.set("puzzle" + id + "_done");
-        if (timedOut) gm.player.set("puzzle" + id + "_hacked");
         Puzzles p = Puzzles.get(id);
         startTalk(p.doneDialogue);
     }
@@ -144,12 +166,15 @@ public class EventHandler {
         gm.sc.showScene(1);
     }
 
+    // =========================================================== hotspots (INTERACTION sanity checker)
+    // Is this hotspot currently on screen at all? (not used up, and its character is present)
     public boolean isShown(Hotspot h) {
         if (h.scene != gm.sc.current || h.done) return false;
         if (!h.actor.equals("") && !gm.ui.isActorVisible(h.actor)) return false;
         return true;
     }
 
+    // Are the story requirements for this hotspot met? 
     public boolean isUnlocked(Hotspot h) { return gm.player.hasAll(h.requires); }
 
     public void clickHotspot(Hotspot h) {
@@ -166,6 +191,7 @@ public class EventHandler {
         refresh();
     }
 
+    // Updates the red markers and the objective text
     public void refresh() {
         gm.ui.refreshHotspots();
         gm.ui.refreshObjective();
