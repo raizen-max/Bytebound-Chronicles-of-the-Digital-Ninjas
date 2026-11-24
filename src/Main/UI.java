@@ -1035,7 +1035,64 @@ public class UI {
             refreshPortrait();
             if (who.equals(popupName)) popupPortrait.setIcon(icon("portraits", who + "_" + expr, 128, 128));
 
-            
+            // talking animation: lasts about as long as the typewriter takes
+            talkSpeaker = who;
+            talkExpr = expr;
+            talkIndex = 0;
+            int ticks = (int) Math.ceil(text.length() / (charsPerTick * 3.3));
+            talkTicks = (gm.settings.animations && getTalkFrames(who).size() > 0) ? Math.max(4, Math.min(60, ticks)) : 0;
+        }
+        setFontSize(messageText, text.length() > (narrator ? 200 : 170) ? 16 : 19);
+        fullText = text;
+        typePos = 0;
+        messageText.setText("");
+        typeStep();
+    }
+
+    void typeStep() {
+        if (!msgPanel.isVisible() || typePos >= fullText.length() || menu.isOpen()) return;
+        typePos = Math.min(fullText.length(), typePos + charsPerTick);
+        messageText.setText(fullText.substring(0, typePos));
+    }
+
+    public boolean isTyping() { return msgPanel.isVisible() && typePos < fullText.length(); }
+
+    public void finishTyping() {
+        typePos = fullText.length();
+        messageText.setText(fullText);
+    }
+
+    public void hideMessage() {
+        talkTicks = 0;
+        msgPanel.setVisible(false);
+        portraitLabel.setVisible(false);
+        nameLabel.setVisible(false);
+        fullText = "";
+        typePos = 0;
+    }
+
+    void refreshPortrait() {
+        if (portraitWho.equals("")) return;
+        portraitLabel.setIcon(icon("portraits", portraitWho + "_" + portraitExpr, 128, 128));
+    }
+
+    /** Runs every 0.1 s: the gem floats up and down and pulses (frame changes every 0.2 s). */
+    void animateMarkers() {
+        markerTick++;
+        boolean on = gm.settings.animations;
+        int newFrame = on ? (markerTick / 2) % 4 : 0;
+        int bob = on ? BOB[markerTick % 8] : 0;
+        for (int i = 0; i < hotspots.size(); i++) {
+            Hotspot h = hotspots.get(i);
+            if (!h.marker.isVisible()) continue;
+            int[] base = markerBase.get(h);
+            move(h.marker, base[0], base[1] - bob, MARKER, MARKER);
+            if (newFrame != markerFrame) h.marker.setIcon(icon("ui", "hotspot_" + newFrame, MARKER, MARKER));
+        }
+        markerFrame = newFrame;
+    }
+
+    
 
     
 
