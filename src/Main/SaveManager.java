@@ -7,6 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
+/**
+ * Save / load game.
+ *  slot 0 = AUTOSAVE (made at the start of every scene; loading it replays that scene from its start)
+ *  slot 1-3 = manual saves (only while exploring a scene; loading puts you back exactly there)
+ * Files are plain text in the /saves folder, so you can open them in Notepad and see what is stored.
+ */
 public class SaveManager {
 
     GameManager gm;
@@ -30,6 +36,7 @@ public class SaveManager {
         }
     }
 
+    /** sceneStart = true for the autosave (the scene will be replayed from its beginning). */
     public boolean save(int slot, boolean sceneStart) {
         Player pl = gm.player;
         Properties p = new Properties();
@@ -43,10 +50,9 @@ public class SaveManager {
         p.setProperty("alarm", "" + pl.alarm);
         p.setProperty("mistakes", "" + pl.mistakes);
         p.setProperty("hints", "" + pl.hints);
-        p.setProperty("timeouts", "" + pl.timeouts);
         p.setProperty("playSeconds", "" + pl.playSeconds);
         p.setProperty("flags", String.join("|", pl.flags));
-        
+        // hotspots already used up, and which characters are on stage
         String done = "", actors = "";
         for (int i = 0; i < gm.ui.hotspots.size(); i++) {
             Hotspot h = gm.ui.hotspots.get(i);
@@ -81,7 +87,6 @@ public class SaveManager {
             boolean alarm = p.getProperty("alarm").equals("true");
             int mistakes = Integer.parseInt(p.getProperty("mistakes", "0"));
             int hints = Integer.parseInt(p.getProperty("hints", "0"));
-            int timeouts = Integer.parseInt(p.getProperty("timeouts", "0"));
             double playSeconds = Double.parseDouble(p.getProperty("playSeconds", "0"));
             int scene = Integer.parseInt(p.getProperty("scene"));
             String mode = p.getProperty("mode");
@@ -95,7 +100,7 @@ public class SaveManager {
             gm.ui.resetEverything();
             pl.reset();
             pl.sanity = sanity; pl.techDebt = techDebt; pl.heap = heap; pl.alarm = alarm;
-            pl.mistakes = mistakes; pl.hints = hints; pl.timeouts = timeouts; pl.playSeconds = playSeconds;
+            pl.mistakes = mistakes; pl.hints = hints; pl.playSeconds = playSeconds;
             for (String f : flags) if (!f.equals("")) pl.set(f);
 
             if (mode.equals("start")) {
