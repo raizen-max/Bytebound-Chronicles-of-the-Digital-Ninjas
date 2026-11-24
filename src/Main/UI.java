@@ -934,6 +934,29 @@ public class UI {
         return cardPanel.isVisible() || screenPanel.isVisible() || gameOverPanel.isVisible() || creditsPanel.isVisible() || deployPanel.isVisible() || puzzlePanel.isVisible();
     }
 
+    // =====================================================================================
+    // hud, toast, objective, hotspots
+    // =====================================================================================
+    public void hud(boolean meters, String right) {
+        hudPanel.setVisible(meters || !right.equals(""));
+        sanityBar.setVisible(meters); debtBar.setVisible(meters); heapBar.setVisible(meters);
+        for (int i = 0; i < 3; i++) hudLabel[i].setVisible(meters);
+        hudRight.setText(right);
+    }
+
+    public void updateHud() {
+        Player p = gm.player;
+        sanityBar.setValue(p.sanity);
+        sanityBar.setString(p.sanity + "%");
+        sanityBar.setForeground(p.sanity > 60 ? new Color(0x4fd8ff) : p.sanity > 30 ? YELLOW : RED);
+        debtBar.setValue(p.techDebt);
+        debtBar.setString(p.techDebt + "%");
+        debtBar.setForeground(p.techDebt < 20 ? new Color(0xaecbff) : RED);
+        heapBar.setValue((int) p.heap);
+        heapBar.setString((int) p.heap + "%");
+        heapBar.setForeground(p.heap < 60 ? new Color(0x4cd97b) : p.heap < 90 ? YELLOW : RED);
+    }
+
     
 
 
