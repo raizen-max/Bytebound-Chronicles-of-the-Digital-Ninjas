@@ -11,33 +11,27 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 
 public class UI {
-     
-    //palette
+
+    // ---- palette
     static final Color NAVY = new Color(0x0e1633), NAVY2 = new Color(0x1d2b64), RED = new Color(0xd62839);
     static final Color WHITE = new Color(0xf4f4f8), YELLOW = new Color(0xffd479), PANEL = new Color(0x0a1128);
     static final int W = 960, H = 540;
-    static int charsPerTick = 2;
+    static int charsPerTick = 2;       
 
     GameManager gm;
     JFrame window;
     Container content;
+    MenuUI menu;
 
-    //scaling
-    double k = 1;
-    int offset_x = 0, offset_y = 0;
+    // ---- scaling
+    double k = 1;                  // current scale
+    int ox = 0, oy = 0;            // offset of the 16:9 area inside the window (black bars)
     class Placed { JComponent c; int x, y, w, h, font; boolean top; }
     ArrayList<Placed> placed = new ArrayList<Placed>();
     HashMap<JComponent, Placed> placedOf = new HashMap<JComponent, Placed>();
     HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
     Timer iconTimer;
 
-    //scenes
-    JPanel[] scenePanel = new JPanel[13];
-    JLabel[] bgLabel = new JLabel[13];
-    ArrayList<Hotspot> hotspots = new ArrayList<Hotspot>();
-    ArrayList<Actor> actors = new ArrayList<Actor>();
-    int frame = 0;
-    
     // ---- scenes
     JPanel[] scenePanel = new JPanel[13];
     JLabel[] bgLabel = new JLabel[13];
@@ -45,9 +39,9 @@ public class UI {
     ArrayList<Actor> actors = new ArrayList<Actor>();
     int frame = 0;
     // hotspot marker (animated gem): frames assets/ui/hotspot_0..3.png
-    HashMap<Hotspot, int[]> markerBase = new HashMap<Hotspot, int[]>();   
+    HashMap<Hotspot, int[]> markerBase = new HashMap<Hotspot, int[]>();   // resting position of each marker 
     int markerTick = 0, markerFrame = 0;
-    static final int[] BOB = {0, 2, 4, 5, 6, 5, 4, 2};                   
+    static final int[] BOB = {0, 2, 4, 5, 6, 5, 4, 2};                   // gentle up/down float
     static final int MARKER = 56;                                         // marker size 
 
     // ---- title screen
@@ -57,17 +51,17 @@ public class UI {
     MenuButton[] titleButton = new MenuButton[5];
     JLabel titleBg, logoLabel, subtitleLabel;
     Pointer titlePointer;
-    int titleSel = 0;                                   // which title button is selected (arrow keys / mouse)
+    int titleSel = 0;                                   // which title button is selected (can be selected w/ arrow keys or mouse)
     int[] titleY = new int[5];
 
-    //HUD
+    // ---- HUD
     JPanel hudPanel;
     JProgressBar sanityBar, debtBar, heapBar;
     JLabel[] hudLabel = new JLabel[3];
     JLabel hudRight;
     JButton menuBtn;
 
-    //message box
+    // ---- message box
     JPanel msgPanel;
     JTextArea messageText;
     JLabel nameLabel, portraitLabel, objectiveLabel, toastLabel, blackout;
@@ -75,29 +69,32 @@ public class UI {
     String fullText = "";
     int typePos = 0;
     String portraitWho = "", portraitExpr = "";
-    ArrayList<String> log = new ArrayList<String>(); 
+    ArrayList<String> log = new ArrayList<String>();    // dialogue history for the LOG screen
 
-    //popup
+    // ---- popup (phone call / slack)
     JPanel popupPanel;
     JLabel popupTitle, popupPortrait, popupRole;
     String popupName = "";
 
-    //talking animation
+    // ---- talking animation (frames: assets/portraits/<name>_talk_0.png, _1.png ...)
     HashMap<String, ArrayList<ImageIcon>> talkFrames = new HashMap<String, ArrayList<ImageIcon>>();
     String talkSpeaker = "", talkExpr = "";
     int talkTicks = 0, talkIndex = 0;
 
-    //panel for puzzles
+    // ---- puzzle panel
     JPanel puzzlePanel;
-    JLabel puzTitle, puzInstr, puzTimer, puzStep;
+    JLabel puzTitle, puzInstr, puzNote, puzStep;
     JTextArea puzCode, puzFeedback;
-    JProgressBar puzTimerBar;
     JButton[] puzOption = new JButton[4];
     JButton puzHint, puzGc;
 
-    // other overlays
-    JPanel deployPanel, cardPanel;
+    // ---- other overlays
+    JPanel deployPanel, cardPanel, gameOverPanel;
+    MenuButton[] gameOverButton = new MenuButton[3];
     JLabel cardTitle, cardSub;
+    JPanel screenPanel;          // zoomed-in monitor (IntelliJ / Maven / JVM profiler pictures)
+    JLabel screenPicture, screenCaption;
+    UmlPanel creditsPanel;
     double creditsTime = 0;
 
     static class LayerPanel extends JPanel {
@@ -105,69 +102,98 @@ public class UI {
         public boolean isOptimizedDrawingEnabled() { return false; }
     }
 
+    // =====================================================================================
     public UI(GameManager gm) {
         this.gm = gm;
-        createMainField();
+        window = new JFrame("Bytebound: Chronicles of Digital Ninjas");
+        window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        window.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) { gm.quit(); }
+        });
+        window.setContentPane(new LayerPanel());
+        content = window.getContentPane();
+        content.setBackground(Color.black);
+        content.setPreferredSize(new Dimension(gm.settings.windowW, gm.settings.windowH));
+        window.setLayout(null);
+        window.setResizable(true);
+        ToolTipManager.sharedInstance().setInitialDelay(100);
 
+        // order matters here: first added = drawn on top
+        menu = new MenuUI(gm, this);
+        gm.menu = menu;
+        createToast();
+        createPuzzlePanel();
+        createDeployPanel();
+        createGameOverPanel();
+        createCardPanel();
+        createScreenPanel();
+        createCreditsPanel();
+        createObjective();
+        createMessageBox();
+        createHud();
+        createPopup();
+        createBlackout();
+        createScenes();
+        createTitle();
+        createKeys();
+
+        window.pack();
+        window.setMinimumSize(new Dimension(640, 400));
+        window.setLocationRelativeTo(null);
+        if (gm.settings.fullscreen) window.setExtendedState(JFrame.MAXIMIZED_BOTH);
         window.setVisible(true);
 
-        window.addComponentListener(new ComponentAdapter() {
-            @Override
+        // re-scale everything whenever the area changes size.
+        content.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 resizeComponents();
+                if (iconTimer != null) iconTimer.restart();     // pictures are re-scaled once the dragging stops
+                if ((window.getExtendedState() & JFrame.MAXIMIZED_BOTH) == 0) {
+                    gm.settings.windowW = content.getWidth();
+                    gm.settings.windowH = content.getHeight();
+                }
             }
         });
+        window.addWindowStateListener(new WindowStateListener() {  
+            public void windowStateChanged(WindowEvent e) {
+                resizeComponents();
+                if (iconTimer != null) iconTimer.restart();
+            }
+        });
+        iconTimer = new Timer(150, new ActionListener() {
+            public void actionPerformed(ActionEvent e) { refreshIcons(); }
+        });
+        iconTimer.setRepeats(false);
+
+        // typewriter: runs every 30 ms
+        new Timer(30, new ActionListener() {
+            public void actionPerformed(ActionEvent e) { typeStep(); }
+        }).start();
 
         resizeComponents();
-
-        window.setVisible(true);
+        refreshIcons();
     }
 
-    public void createMainField() {
-
-        window = new JFrame();
-
-        window.setTitle("Bytebound");
-        window.setSize(800, 600);
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setResizable(true);
-        window.getContentPane().setBackground(Color.black);
-
-        window.setLayout(null);
-
-        messageText = new JTextArea("Test Message");
-        messageText.setBounds(10, 100, 300, 10);
-        messageText.setBackground(Color.black);
-        messageText.setForeground(Color.white);
-        messageText.setEditable(false);
-        messageText.setLineWrap(true);
-        messageText.setWrapStyleWord(true);
-        messageText.setFont(new Font("Press Start 2P", Font.PLAIN, 26));
-
-        window.add(messageText);
-    } 
-
-
-    //===================================================
-    // ------------------- Scaling  ---------------------
-    //===================================================
+    // =====================================================================================
+    // scaling helpers
+    // =====================================================================================
     static Font font(int size) { return new Font(Font.MONOSPACED, Font.BOLD, size); }
 
-    // Adds a component using LOGICAL (960x540) coordinates and remembers them so it can be re-scaled. 
+    /** Adds a component using LOGICAL (960x540) coordinates and remembers them so it can be re-scaled. */
     void put(Container parent, JComponent c, int x, int y, int w, int h) {
         parent.add(c);
         Placed p = new Placed();
         p.c = c; p.x = x; p.y = y; p.w = w; p.h = h;
         p.top = (parent == content);
-        // p.font = (c instanceof JPanel || c instanceof MenuButton || c instanceof Pointer || c instanceof Divider) ? 0 : c.getFont().getSize();
+        p.font = (c instanceof JPanel || c instanceof MenuButton || c instanceof Pointer || c instanceof Divider) ? 0 : c.getFont().getSize();
         placed.add(p);
         placedOf.put(c, p);
         apply(p);
-    } 
+    }
 
     void apply(Placed p) {
-        int x = (int) Math.round(p.x * k) + (p.top ? offset_x : 0);
-        int y = (int) Math.round(p.y * k) + (p.top ? offset_y : 0);
+        int x = (int) Math.round(p.x * k) + (p.top ? ox : 0);
+        int y = (int) Math.round(p.y * k) + (p.top ? oy : 0);
         p.c.setBounds(x, y, (int) Math.round(p.w * k), (int) Math.round(p.h * k));
         if (p.font > 0) p.c.setFont(font(Math.max(8, (int) Math.round(p.font * k))));
     }
@@ -191,19 +217,21 @@ public class UI {
         double nk = Math.min(w / (double) W, h / (double) H);
         if (Math.abs(nk - k) > 0.0001) iconCache.clear();
         k = nk;
-        offset_x = (int) ((w - W * k) / 2);
-        offset_y = (int) ((h - H * k) / 2);
+        ox = (int) ((w - W * k) / 2);
+        oy = (int) ((h - H * k) / 2);
         for (int i = 0; i < placed.size(); i++) apply(placed.get(i));
         content.repaint();
     }
 
-    // Finds an image inside assets/<category>/ 
+    /** Finds a picture in assets/<category>/, src/res/<category>/ or src/res/ */
     String findImage(String category, String name) {
-        String path = "assets/" + category + "/" + name + ".png";
-    return new File(path).exists() ? path : null;
+        String[] where = {"assets/" + category + "/" + name + ".png", "src/res/" + category + "/" + name + ".png",
+                "src/res/" + name + ".png", "res/" + name + ".png"};
+        for (int i = 0; i < where.length; i++) if (new File(where[i]).exists()) return where[i];
+        return null;
     }
 
-    //Image scaling and caching
+    /** Loads a picture scaled (crisp pixels) to logical size w x h. Returns null if it does not exist. */
     ImageIcon icon(String category, String name, int w, int h) {
         int pw = Math.max(1, (int) Math.round(w * k)), ph = Math.max(1, (int) Math.round(h * k));
         String key = category + "/" + name + "@" + pw + "x" + ph;
@@ -228,8 +256,16 @@ public class UI {
         iconCache.put(key, icon);
         return icon;
     }
-    
-    // ADD refreshIcons method
+
+    void refreshIcons() {
+        int s = gm.sc.current;
+        if (s >= 1) setBackground(s);
+        for (int i = 0; i < actors.size(); i++) if (actors.get(i).scene == s) updateActor(actors.get(i));
+        refreshPortrait();
+        for (int i = 0; i < hotspots.size(); i++) if (hotspots.get(i).marker.isVisible()) hotspots.get(i).marker.setIcon(icon("ui", "hotspot_" + markerFrame, MARKER, MARKER));
+        refreshTitleArt();
+        if (!popupName.equals("")) popupPortrait.setIcon(icon("portraits", popupName + "_neutral", 128, 128));
+    }
 
     JLabel label(String text, int size, Color color) {
         JLabel l = new JLabel(text);
@@ -244,7 +280,7 @@ public class UI {
         b.setBackground(bg);
         b.setForeground(WHITE);
         b.setFocusPainted(false);
-        b.setFocusable(false);          // so the Space key won't press a button or smthn
+        b.setFocusable(false);          // so the Space key never presses a button
         b.setOpaque(true);
         b.setBorder(new LineBorder(WHITE, 2));
         return b;
@@ -302,13 +338,13 @@ public class UI {
         put(content, msgPanel, 20, 392, 920, 128);
         put(msgPanel, messageText, 24, 14, 870, 100);
 
-        /* MouseAdapter advance = new MouseAdapter() {
+        MouseAdapter advance = new MouseAdapter() {
             public void mousePressed(MouseEvent e) { gm.ev.next(); }
-        }; 
+        };
         msgPanel.addMouseListener(advance);
         messageText.addMouseListener(advance);
         portraitLabel.addMouseListener(advance);
-        nameLabel.addMouseListener(advance); */
+        nameLabel.addMouseListener(advance);
     }
 
     void createHud() {
@@ -335,9 +371,9 @@ public class UI {
         put(hudPanel, hudRight, 684, 8, 190, 18);
 
         menuBtn = button("MENU", 13, NAVY2);
-        /* menuBtn.addActionListener(new ActionListener() {
+        menuBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) { menu.open("pause", ""); }
-        }); */
+        });
         put(hudPanel, menuBtn, 880, 5, 72, 26);
     }
 
@@ -409,20 +445,25 @@ public class UI {
                         Integer.parseInt(rows[i][4]) * 3, Integer.parseInt(rows[i][5]) * 3);
             }
 
-            // 2. characters
+            //characters
             String[][] arows = SceneData.actors(n);
             for (int i = 0; i < arows.length; i++) {
                 Actor a = new Actor();
                 a.scene = n; a.name = arows[i][0]; a.sprite = arows[i][1];
                 a.startsVisible = arows[i][4].equals("true");
                 if (!a.sprite.equals("popup")) {
+                    // characters are shown as framed portrait cards
                     a.label = new JLabel();
-                    put(scenePanel[n], a.label, Integer.parseInt(arows[i][2]) * 3, Integer.parseInt(arows[i][3]) * 3, 96, 144);
+                    a.label.setOpaque(true);
+                    a.label.setBackground(PANEL);
+                    a.label.setBorder(new LineBorder(RED, 3));
+                    a.label.setHorizontalAlignment(SwingConstants.CENTER);
+                    put(scenePanel[n], a.label, Integer.parseInt(arows[i][2]) * 3 - 6, Integer.parseInt(arows[i][3]) * 3 + 36, 108, 108);
                 }
                 actors.add(a);
             }
 
-            // 3. background (last = at the bottom)
+            //background
             bgLabel[n] = new JLabel();
             put(scenePanel[n], bgLabel[n], 0, 0, 960, 540);
         }
@@ -434,7 +475,6 @@ public class UI {
         put(content, t, 0, 0, 960, 540);
         scenePanel[0] = t;
 
-        // footer (drawn first = on top): key hints on the left, version on the right
         String[] keys = {"\u2191", "\u2193", "Enter"};
         int[] kx = {268, 296, 370}, kw = {24, 24, 52};
         for (int i = 0; i < 3; i++) {
@@ -484,7 +524,6 @@ public class UI {
         setTitleSel(0);
     }
 
-    /** Re-applies the title pictures (called at start and after every resize). */
     void refreshTitleArt() {
         titleBg.setIcon(icon("backgrounds", "title_" + frame, 960, 540));
         logoLabel.setIcon(icon("ui", "logo", 111 * 3, 17 * 3));
@@ -507,20 +546,19 @@ public class UI {
         }
     }
 
-    /** Space / Enter: confirm the selected title button, otherwise advance the dialogue. */
     void confirmKey() {
+        if (screenPanel.isVisible()) { if (!menu.isOpen()) gm.ev.screenClicked(); return; }
+        if (gameOverPanel.isVisible()) { if (!menu.isOpen()) gm.ev.gameOverChoice(0); return; }     // Enter on Game Over = Try Again
         if (gm.sc.current == 0 && !menu.isOpen()) { if (titleButton[titleSel].isEnabled()) titleClick(titleSel); }
         else gm.ev.next();
     }
 
-    // ---- small custom-painted pieces of the title screen
-    static void pixelRect(Graphics2D g, int x, int y, int w, int h) {      // rectangle with notched (pixel) corners
+    static void pixelRect(Graphics2D g, int x, int y, int w, int h) { 
         g.fillRect(x + 2, y, w - 4, h);
         g.fillRect(x, y + 2, w, h - 4);
         g.fillRect(x + 1, y + 1, w - 2, h - 2);
     }
-    
-    /** Navy pixel button with a drop shadow. Turns red when selected or hovered. Used on the title and menu screens. */
+
     static class MenuButton extends JButton {
         int lw, lh, lfont;
         boolean selected = false, hot = false;
@@ -538,12 +576,12 @@ public class UI {
             g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g.scale(getWidth() / (double) lw, getHeight() / (double) lh);
             boolean on = isEnabled(), red = on && (selected || hot);
-            // Color body = !on ? new Color(0x6d7b92) : red ? BTN_SEL : BTN;
+            Color body = !on ? new Color(0x6d7b92) : red ? BTN_SEL : BTN;
             Color light = !on ? new Color(0x8593aa) : red ? new Color(0xe0383b) : new Color(0x1d4a85);
             int bw = lw - 5, bh = lh - 5;
             g.setColor(new Color(0x8a96b0));
             pixelRect(g, 5, 5, bw, bh);                       // drop shadow
-            // g.setColor(body);
+            g.setColor(body);
             pixelRect(g, 0, 0, bw, bh);
             g.setColor(light);
             g.fillRect(3, 2, bw - 6, 2);                      // top highlight
@@ -555,7 +593,6 @@ public class UI {
         }
     }
 
-    /** The red arrow that points at the selected title button. */
     static class Pointer extends JComponent {
         protected void paintComponent(Graphics g0) {
             Graphics2D g = (Graphics2D) g0.create();
@@ -568,7 +605,6 @@ public class UI {
         }
     }
 
-    /** Thin line with a red square in the middle, under the logo. */
     static class Divider extends JComponent {
         protected void paintComponent(Graphics g0) {
             Graphics2D g = (Graphics2D) g0.create();
@@ -582,7 +618,6 @@ public class UI {
         }
     }
 
-    /** The light framed panel behind the menu, with notched corners and a soft double border. */
     static class TitleCard extends JComponent {
         protected void paintComponent(Graphics g0) {
             Graphics2D g = (Graphics2D) g0.create();
@@ -604,9 +639,43 @@ public class UI {
         else gm.quit();
     }
 
-    /** CONTINUE is only available when an autosave exists. */
+    // CONTINUE is only available when an autosave exists.
     public void refreshTitleButtons() {
         titleButton[1].setEnabled(gm.saves.exists(0));
+    }
+
+    void createGameOverPanel() {
+        gameOverPanel = new LayerPanel();
+        gameOverPanel.setBackground(Color.black);
+        JLabel title = label("GAME OVER", 84, RED);
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel sub = label("EXCEPTION IN THREAD \"MAIN\"", 28, WHITE);
+        sub.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel info = label("Try again from the start of the scene you failed in.", 15, new Color(0x8a96c4));
+        info.setHorizontalAlignment(SwingConstants.CENTER);
+        gameOverPanel.setVisible(false);
+        put(content, gameOverPanel, 0, 0, 960, 540);
+        String[] names = {"Try Again", "Load Game", "Main Menu"};
+        for (int i = 0; i < 3; i++) {
+            final int id = i;
+            gameOverButton[i] = new MenuButton(names[i], 280, 44, 20);
+            gameOverButton[i].selected = (i == 0);
+            gameOverButton[i].addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) { gm.ev.gameOverChoice(id); }
+            });
+            gameOverButton[i].addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e) { for (int b = 0; b < 3; b++) { gameOverButton[b].selected = (b == id); gameOverButton[b].repaint(); } }
+            });
+            put(gameOverPanel, gameOverButton[i], 340, 330 + i * 56, 280, 44);
+        }
+        put(gameOverPanel, info, 0, 285, 960, 20);
+        put(gameOverPanel, sub, 0, 205, 960, 40);
+        put(gameOverPanel, title, 0, 100, 960, 100);
+    }
+
+    public void showGameOver() {
+        for (int b = 0; b < 3; b++) { gameOverButton[b].selected = (b == 0); gameOverButton[b].repaint(); }
+        gameOverPanel.setVisible(true);
     }
 
     void createCardPanel() {
@@ -626,6 +695,33 @@ public class UI {
         cardPanel.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) { gm.ev.cardClicked(); }
         });
+    }
+
+    void createScreenPanel() {
+        screenPanel = new JPanel(null);
+        screenPanel.setBackground(new Color(0x050a1c));
+        screenPicture = new JLabel();
+        screenPicture.setHorizontalAlignment(SwingConstants.CENTER);
+        screenCaption = label("", 18, WHITE);
+        screenCaption.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel hint = label("click to continue", 16, new Color(0x8a96c4));
+        hint.setHorizontalAlignment(SwingConstants.CENTER);
+        screenPanel.setVisible(false);
+        put(content, screenPanel, 0, 0, 960, 540);
+        put(screenPanel, screenPicture, 160, 50, 640, 402);
+        put(screenPanel, screenCaption, 0, 458, 960, 28);
+        put(screenPanel, hint, 0, 496, 960, 20);
+        screenPanel.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) { gm.ev.screenClicked(); }
+        });
+    }
+
+    public void showScreen(String name) {
+        String caption = name.equals("maven") ? "Maven Build" : name.equals("jvm") ? "JVM Profiler" : "IntelliJ IDEA";
+        screenPicture.setIcon(icon("backgrounds", name.equals("maven") ? "monitor2" : name.equals("jvm") ? "monitor3" : "monitor1", 640, 402));
+        screenCaption.setText(caption);
+        hideMessage();
+        screenPanel.setVisible(true);
     }
 
     void createDeployPanel() {
@@ -664,8 +760,7 @@ public class UI {
         puzCode.setFont(font(16));
         puzCode.setEditable(false);
         puzCode.setFocusable(false);
-        puzTimer = label("", 24, WHITE);
-        puzTimerBar = new JProgressBar(0, 100);
+        puzNote = label("", 14, WHITE);
         puzStep = label("", 13, new Color(0xaecbff));
         puzHint = button("HINT (+4 debt)", 12, new Color(0x6b5a1f));
         puzGc = button("RUN GC", 14, new Color(0x1f6b3a));
@@ -683,8 +778,7 @@ public class UI {
         put(puzzlePanel, puzTitle, 20, 10, 860, 24);
         put(puzzlePanel, puzInstr, 20, 38, 860, 26);
         put(puzzlePanel, puzCode, 20, 76, 580, 170);
-        put(puzzlePanel, puzTimer, 630, 76, 260, 34);
-        put(puzzlePanel, puzTimerBar, 630, 114, 250, 14);
+        put(puzzlePanel, puzNote, 630, 76, 270, 52);
         put(puzzlePanel, puzStep, 630, 134, 250, 18);
         put(puzzlePanel, puzHint, 630, 166, 130, 38);
         put(puzzlePanel, puzGc, 770, 166, 110, 38);
@@ -754,24 +848,87 @@ public class UI {
         public void mouseExited(MouseEvent e) { h.area.setBorder(null); }
     }
 
+    // =====================================================================================
+    // scene control
+    // =====================================================================================
+    public void showOnly(int n) {
+        for (int i = 0; i <= 12; i++) scenePanel[i].setVisible(i == n);
+        menuBtn.setVisible(n >= 1 && n < 10);
+        hideMessage();
+        window.repaint();
+    }
+
+    public void setBackground(int n) {
+        if (n < 1) return;
+        String bg = SceneData.info(n)[3];
+        if (gm.player.alarm && !bg.equals("cabin")) bg = bg + "_alert";
+        bgLabel[n].setIcon(icon("backgrounds", bg, 960, 540));
+    }
+
+    public void resetActors(int n) {
+        for (int i = 0; i < actors.size(); i++) {
+            Actor a = actors.get(i);
+            if (a.scene != n) continue;
+            a.visible = a.startsVisible;
+            updateActor(a);
+        }
+    }
+
+    void updateActor(Actor a) {
+        if (a.label != null) {
+            a.label.setVisible(a.visible);
+            a.label.setIcon(icon("portraits", a.name + "_neutral", 96, 96));
+        } else if (a.visible) showPopup(a.name);
+        else if (popupName.equals(a.name)) hidePopup();
+    }
+
+    public void setActor(String name, boolean visible) {
+        for (int i = 0; i < actors.size(); i++) {
+            Actor a = actors.get(i);
+            if (a.scene == gm.sc.current && a.name.equals(name)) { a.visible = visible; updateActor(a); }
+        }
+    }
+
+    public boolean isActorVisible(String name) {
+        for (int i = 0; i < actors.size(); i++) {
+            Actor a = actors.get(i);
+            if (a.scene == gm.sc.current && a.name.equals(name)) return a.visible;
+        }
+        return false;
+    }
+
+    // swap between the 2 sprite frames for idle animation
+    public void flipActors() {
+        if (!gm.settings.animations) return;
+        frame = 1 - frame;
+        if (gm.sc.current == 0) titleBg.setIcon(icon("backgrounds", "title_" + frame, 960, 540));   // twinkling stars, blinking LEDs
+        for (int i = 0; i < actors.size(); i++) {
+            Actor a = actors.get(i);
+            if (a.scene == gm.sc.current && a.label != null && a.visible) updateActor(a);
+        }
+    }
+
+    public void resetEverything() {
+        for (int i = 0; i < hotspots.size(); i++) hotspots.get(i).done = false;
+        hideOverlays();
+        hidePopup();
+        talkTicks = 0;
+        log.clear();
+        creditsPanel.setVisible(false);
+    }
+
+    public void hideOverlays() {
+        puzzlePanel.setVisible(false);
+        deployPanel.setVisible(false);
+        cardPanel.setVisible(false);
+        screenPanel.setVisible(false);
+        gameOverPanel.setVisible(false);
+        blackout.setVisible(false);
+        gm.puzzle.active = false;
+        gm.ev.paused = false;
+        gm.ev.talking = false;
+        hideMessage();
+    }
+
     
-
-
-
-    
-    
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
 }
