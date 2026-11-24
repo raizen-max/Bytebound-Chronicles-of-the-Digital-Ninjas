@@ -45,7 +45,7 @@ public class UI {
     static final int MARKER = 56;                                         // marker size 
 
     // ---- title screen
-    static final String VERSION = "v.0.2 Prototype", COPYRIGHT = "\u00A9 2026 Bytebound Team";
+    static final String VERSION = "v.0.1 Prototype", COPYRIGHT = "\u00A9 2026 ReneVerse";
     static final Color CARD = new Color(0xeaf7ff), CARD_EDGE = new Color(0x8399b3);
     static final Color BTN = new Color(0x01274c), BTN_SEL = new Color(0xb51316);
     MenuButton[] titleButton = new MenuButton[5];
@@ -1133,7 +1133,101 @@ public class UI {
         popupPanel.setVisible(false);
     }
 
-    
+    // =====================================================================================
+    // cards, credits, puzzle display
+    // =====================================================================================
+    public void showCard(String title, String sub) {
+        cardTitle.setText(title);
+        cardSub.setText(sub);
+        Color c = title.startsWith("GAME OVER") ? RED : title.startsWith("RANK S") ? YELLOW : WHITE;
+        cardTitle.setForeground(c);
+        cardPanel.setVisible(true);
+    }
 
+    public void showCredits() {
+        creditsTime = 0;
+        creditsPanel.setVisible(true);
+    }
 
+    public void showPuzzleStep(Puzzles p, int step, boolean solved) {
+        puzTitle.setText(p.title + "    [" + p.file + "]");
+        puzInstr.setText(p.instruction[step]);
+        String code = "";
+        for (int i = 0; i < p.code[step].length; i++) code += p.code[step][i] + "\n";
+        String fill = solved ? p.options[step][p.correct[step]] : "[ ??? ]";
+        puzCode.setText(code.replace("____", fill));
+        for (int i = 0; i < 4; i++) {
+            puzOption[i].setText(" " + (char) ('A' + i) + ")  " + p.options[step][i]);
+            puzOption[i].setEnabled(!solved);
+            puzOption[i].setBackground(solved && i == p.correct[step] ? new Color(0x1f6b3a) : NAVY2);
+        }
+        puzStep.setText("Step " + (step + 1) + " of " + p.correct.length);
+        puzGc.setVisible(p.gcButton);
+        puzNote.setText("<html>" + (p.gcButton ? "No time limit. Mistakes raise the heap: keep it under 98%!" : "No time limit. Take your time.") + "</html>");
+    }
+
+    // =====================================================================================
+    // credits: animated UML class diagram + your stats
+    // =====================================================================================
+    class UmlPanel extends JPanel {
+        String[] name = {"Transaction", "CardTransaction", "CashTransaction", "RefundTransaction", "Payable",
+                "CreditCardPayment", "CryptoWallet", "UserAccount", "UserDTO"};
+        String[] detail = {"<<abstract>>  + process()", "+ process()", "+ process()", "+ process()", "<<interface>>",
+                "- db : DatabaseConnection", "- db : DatabaseConnection", "- balance : double", "- name : String"};
+        int[][] box = {{385, 70, 190, 60}, {180, 190, 180, 50}, {390, 190, 180, 50}, {600, 190, 200, 50}, {385, 300, 190, 60},
+                {230, 410, 200, 50}, {540, 410, 190, 50}, {30, 300, 290, 60}, {640, 300, 290, 60}};
+        int[][] link = {{1, 0}, {2, 0}, {3, 0}, {5, 4}, {6, 4}};   // child, parent
+
+        protected void paintComponent(Graphics g0) {
+            Graphics2D g = (Graphics2D) g0;
+            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            g.scale(getWidth() / (double) W, getHeight() / (double) H);     // draw in logical coordinates
+            g.setColor(NAVY);
+            g.fillRect(0, 0, W, H);
+            g.setColor(WHITE);
+            g.setFont(font(22));
+            g.drawString("BYTEBOUND  -  CREDITS", 340, 44);
+            for (int i = 0; i < link.length; i++) {
+                if (creditsTime < link[i][0] * 0.7 + 0.5) continue;
+                int[] c = box[link[i][0]], p = box[link[i][1]];
+                int x1 = c[0] + c[2] / 2, y1 = c[1], x2 = p[0] + p[2] / 2, y2 = p[1] + p[3];
+                g.setStroke(i >= 3 ? new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10, new float[]{8, 6}, 0) : new BasicStroke(2));
+                g.setColor(WHITE);
+                g.drawLine(x1, y1, x2, y2);
+                g.setStroke(new BasicStroke(2));
+                g.drawPolygon(new int[]{x2, x2 - 9, x2 + 9}, new int[]{y2, y2 + 14, y2 + 14}, 3);
+            }
+            for (int i = 0; i < name.length; i++) {
+                if (creditsTime < i * 0.7) continue;
+                int[] b = box[i];
+                g.setColor(NAVY2);
+                g.fillRect(b[0], b[1], b[2], b[3]);
+                g.setColor(RED);
+                g.setStroke(new BasicStroke(3));
+                g.drawRect(b[0], b[1], b[2], b[3]);
+                g.drawLine(b[0], b[1] + 26, b[0] + b[2], b[1] + 26);
+                g.setColor(WHITE);
+                g.setFont(font(15));
+                g.drawString(name[i], b[0] + 10, b[1] + 19);
+                g.setFont(font(11));
+                g.setColor(new Color(0xc9d1f0));
+                g.drawString(detail[i], b[0] + 10, b[1] + 44);
+            }
+            Player p = gm.player;
+            int secs = (int) p.playSeconds;
+            g.setFont(font(15));
+            g.setColor(WHITE);
+            g.drawString(String.format("Time %d:%02d    Mistakes %d    Hints %d", secs / 60, secs % 60, p.mistakes, p.hints), 30, 480);
+            String msg = "BYTEBOUND: CHRONICLES OF DIGITAL NINJAS   -   Made with Java Swing   -   Thanks for playing!      ";
+            g.setFont(font(18));
+            g.setColor(YELLOW);
+            int w = g.getFontMetrics().stringWidth(msg);
+            g.drawString(msg, 960 - (int) ((creditsTime * 90) % (w + 960)), 505);
+            if (creditsTime > 4) {
+                g.setColor(WHITE);
+                g.setFont(font(16));
+                g.drawString("click to return to the title screen", 320, 530);
+            }
+        }
+    }
 }
