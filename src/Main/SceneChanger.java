@@ -1,17 +1,18 @@
 package src.Main;
 
+/** Switches between scenes (like RyiSnow's SceneChanger). */
 public class SceneChanger {
 
     GameManager gm;
-    int current = 0;       
-    boolean fading = false; /
+    int current = 0;        // 0 = title screen
+    boolean fading = false;
 
     public SceneChanger(GameManager gm) { this.gm = gm; }
 
     public void showTitle() {
         current = 0;
         gm.ui.hideOverlays();
-        gm.ui.toastLabel.setVisible(false);
+        gm.ui.toastLabel.setVisible(false);      // no leftover scene banner on the title
         gm.ui.toastTime = 0;
         gm.ui.showOnly(0);
         gm.ui.hud(false, "");
@@ -47,11 +48,13 @@ public class SceneChanger {
         return true;
     }
 
+    /** Used by "load autosave": jump to a scene even though it is not the next one, then play it from its start. */
     public void restartScene(int n) {
         current = (n == 1) ? 0 : n - 1;
         showScene(n);
     }
 
+    /** Used by "load manual save": show the scene exactly as it was (no intro dialogue). actors = "name:1|name:0|..." */
     public void restoreScene(int n, String actors) {
         current = n;
         String[] info = SceneData.info(n);
