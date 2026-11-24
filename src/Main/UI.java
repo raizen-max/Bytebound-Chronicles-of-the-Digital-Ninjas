@@ -700,6 +700,51 @@ public class UI {
         put(puzzlePanel, puzFeedback, 20, 384, 860, 70);
     }
 
+    void createCreditsPanel() {
+        creditsPanel = new UmlPanel();
+        creditsPanel.setVisible(false);
+        put(content, creditsPanel, 0, 0, 960, 540);
+        creditsPanel.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) { gm.ev.creditsClicked(); }
+        });
+    }
+
+    /** Keyboard shortcuts. */
+    void createKeys() {
+        InputMap im = window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = window.getRootPane().getActionMap();
+        bind(im, am, "ESCAPE", new Runnable() { public void run() { menu.toggle(); } });
+        bind(im, am, "SPACE", new Runnable() { public void run() { confirmKey(); } });
+        bind(im, am, "ENTER", new Runnable() { public void run() { confirmKey(); } });
+        bind(im, am, "UP", new Runnable() { public void run() { moveTitleSel(-1); } });
+        bind(im, am, "DOWN", new Runnable() { public void run() { moveTitleSel(1); } });
+        bind(im, am, "F5", new Runnable() { public void run() { gm.quickSave(); } });
+        bind(im, am, "F9", new Runnable() { public void run() { gm.quickLoad(); } });
+        bind(im, am, "F11", new Runnable() { public void run() { toggleFullscreen(); } });
+        bind(im, am, "G", new Runnable() { public void run() { keyGC(); } });
+    }
+
+    void bind(InputMap im, ActionMap am, String key, final Runnable action) {
+        im.put(KeyStroke.getKeyStroke(key), key);
+        am.put(key, new AbstractAction() {
+            public void actionPerformed(ActionEvent e) { action.run(); }
+        });
+    }
+
+    void keyGC() {
+        if (menu.isOpen()) return;
+        if (gm.puzzle.active) gm.puzzle.gc();
+        else if (gm.sc.current == 7 && !gm.ev.talking) toast(gm.player.gc(), 2.0);
+    }
+
+    void toggleFullscreen() {
+        boolean on = (window.getExtendedState() & JFrame.MAXIMIZED_BOTH) == 0;
+        window.setExtendedState(on ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
+        gm.settings.fullscreen = on;
+    }
+
+    
+
     
     
 
